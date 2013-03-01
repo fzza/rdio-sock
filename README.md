@@ -1,6 +1,6 @@
 rdio-sock
 =========
-Unofficial Rdio WebSocket library
+Unofficial Rdio WebSocket Library
 
 **Very early development, Expect major changes without notice or documentation**
 
