@@ -1,3 +1,4 @@
 *.pyc
 
 /.idea
+/src/examples/console.auth
