@@ -163,4 +163,3 @@ class RdioPubSubMessage:
             return self.method + ' ' + self.topic + '|' + json.dumps(self.data)
         else:
             return self.method + ' ' + self.topic
-
