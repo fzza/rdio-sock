@@ -1,18 +1,23 @@
+import code
 import os
 import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.insert(0, os.path.abspath(current_dir + "\\..\\"))
+
+from rdiosock import RdioSock
 from rdiosock.exceptions import RdioException
 
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + "/../"))
-from rdiosock import RdioSock
+rdio = RdioSock()
 
-if __name__ == '__main__':
-    rdio = RdioSock()
 
+def login():
     username = None
     password = None
 
     # Read auth from /console.auth
-    auth_path = os.path.dirname(__file__) + "/console.auth"
+    auth_path = current_dir + "/console.auth"
     if os.path.exists(auth_path):
         fp = open(auth_path)
         data = fp.read()
@@ -34,4 +39,12 @@ if __name__ == '__main__':
         print 'failed to login, unable to continue'
         raise
 
-    rdio.pubsub.connect()  # Connect the pubsub client
+
+def connected(message):
+    print "connected"
+
+if __name__ == '__main__':
+    login()
+    rdio.pubsub.connect(connected)
+
+    code.interact(local=globals())

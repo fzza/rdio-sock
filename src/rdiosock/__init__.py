@@ -2,7 +2,8 @@ import re
 import requests
 from rdiosock.common import PATTERN_ENV
 from rdiosock.remote import RdioRemote
-from rdiosock.services.pubsub import RdioPubSub
+from rdiosock.services.private import RdioPrivateService
+from rdiosock.pubsub import RdioPubSub
 from rdiosock.user import RdioUser
 from rdiosock.server_info import RdioServerInfo
 from rdiosock.utils import parse_json, api_url, return_data_type
@@ -14,8 +15,8 @@ class RdioSock:
         self.user = RdioUser(self)
         self.server_info = RdioServerInfo(self)
 
-        # Services
         self.pubsub = RdioPubSub(self)
+        self.services = RdioSockServiceManager(self)
 
         # Environment Information
         self.env_loaded = False
@@ -82,3 +83,11 @@ class RdioSock:
             cookies['r'] = self.user.session_cookie
 
         return requests.request(http_method, url, data=params, cookies=cookies)
+
+
+class RdioSockServiceManager:
+    def __init__(self, sock):
+        self._sock = sock
+
+        # Services
+        self.private = RdioPrivateService(self._sock)
