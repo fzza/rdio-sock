@@ -16,6 +16,7 @@
 
 
 import json
+import socket
 from ws4py.client.threadedclient import WebSocketClient
 from rdiosock.exceptions import RdioException, RdioApiError
 from rdiosock.utils import camel_to_score, update_attrs, randint, random_id, EventHook
@@ -37,18 +38,19 @@ class RdioPubSub:
         self.token = None
         self.servers = None
 
-    def connect(self):
+    def connect(self, update=True):
         if self._sock.user.authorization_key is None or \
                 self._sock.user.session_cookie is None:
             raise RdioException()
 
-        self.update_info()  # Update our PubSub info
+        if update:
+            self.update_info()  # Update our PubSub info
 
         if self.token is None or self.token == '':
             raise RdioApiError()
 
         # Start up the WebSocket client
-        self.ws = RdioPubSubClient(self, self.received_message)
+        self.ws = RdioPubSubClient(self, self.received_message, self.reconnect)
         self.ws.connect()
 
     def update_info(self):
@@ -119,18 +121,22 @@ class RdioPubSub:
         print "[RdioPubSub] received_message:", message
 
         if message.method == RdioPubSubMessage.METHOD_CONNECTED:
-            self.on_connected.fire()
+            self.on_connected()
         elif message.method == RdioPubSubMessage.METHOD_PUB:
             # Send message to subscribed callbacks
             if message.topic in self._subscription_callbacks:
                 for callback in self._subscription_callbacks[message.topic]:
                     callback(message)
 
+    def reconnect(self):
+        self.connect(False)
+
 
 class RdioPubSubClient(WebSocketClient):
-    def __init__(self, pubsub, received_message):
+    def __init__(self, pubsub, received_message, reconnect):
         self.pubsub = pubsub
         self._received_message = received_message
+        self._reconnect = reconnect
 
         super(RdioPubSubClient, self).__init__(self._select_random_server(False))
 
@@ -166,7 +172,8 @@ class RdioPubSubClient(WebSocketClient):
         print "[RdioPubSubClient] closed:", code, reason
 
         if code == 1006:
-            self.connect()
+            print "reconnecting"
+            self._reconnect()
 
     def received_message(self, message):
         self._received_message(RdioPubSubMessage.parse(str(message)))

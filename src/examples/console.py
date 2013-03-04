@@ -17,6 +17,7 @@
 
 import code
 import os
+from pprint import pprint
 import sys
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,11 +58,17 @@ def login():
         raise
 
 
+def song_changed(song):
+    print "song_changed", " - ".join([song['name'], song['album'], song['artist']])
+
+
 def pubsub_connected():
     print "pubsub_connected"
 
     # Subscribe services into pubsub updates
     rdio.pubsub.subscribe(rdio.services.fields)
+
+    rdio.services.fields.on_changed.bind(song_changed, 'lastSongPlayed')
 
 if __name__ == '__main__':
     login()

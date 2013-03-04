@@ -16,6 +16,7 @@
 from pprint import pprint
 
 from rdiosock.services import RdioService
+from rdiosock.utils import EventHook
 
 
 class RdioFieldService(RdioService):
@@ -24,16 +25,19 @@ class RdioFieldService(RdioService):
     def __init__(self, sock):
         self.fields = {}
 
+        self.on_changed = EventHook()
+
         super(RdioFieldService, self).__init__(sock)
 
-    def update(self, fields):
+    def received_changed(self, fields):
         for field, value in fields.items():
             self.fields[field] = value
-            print '[RdioFieldService]', 'field updated:', field
+            self.on_changed[field](value)
+            print '[RdioFieldService]', 'field changed:', field
 
     def received_message(self, message):
         if message.data['event'] == 'changed':
             if 'fields' not in message.data:
                 print '[RdioFieldService]', 'invalid message received'
             else:
-                self.update(message.data['fields'])
+                self.received_changed(message.data['fields'])

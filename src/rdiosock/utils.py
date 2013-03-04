@@ -63,17 +63,54 @@ def random_id():
 
 class EventHook(object):
     def __init__(self):
-        self.__handlers = []
+        # { <subject> : [ <handler> ] }
+        self.__handlers = {}
 
-    def bind(self, handler):
-        self.__handlers.append(handler)
+    def bind(self, handler, subject=None):
+        if subject not in self.__handlers:
+            self.__handlers[subject] = []
+
+        self.__handlers[subject].append(handler)
 
     def unbind(self, handler):
-        self.__handlers.remove(handler)
+        subject = None
+        found = False
 
-    def fire(self, *args, **kwargs):
-        for handler in self.__handlers:
-            handler(*args, **kwargs)
+        for subject, handlers in self.__handlers.items():
+            for h in handlers:
+                if h == handler:
+                    found = True
+                    break
+
+        if not found:
+            raise ValueError()
+
+        self.__handlers[subject].remove(handler)
+
+        if len(self.__handlers[subject]) == 0:
+            del self.__handlers[subject]
+
+    def __getitem__(self, subject):
+        if subject in self.__handlers:
+            return FunctionListWrapper(self.__handlers[subject])
+        return FunctionListWrapper()
+
+    def __call__(self, *args, **kwargs):
+        for subject, handlers in self.__handlers.items():
+            for handler in handlers:
+                handler(*args, **kwargs)
+
+
+class FunctionListWrapper(object):
+    def __init__(self, functions=None):
+        if functions is None:
+            functions = []
+
+        self.functions = functions
+
+    def __call__(self, *args, **kwargs):
+        for function in self.functions:
+            function(*args, **kwargs)
 
 
 #
