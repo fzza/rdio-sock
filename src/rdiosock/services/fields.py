@@ -13,22 +13,27 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from pprint import pprint
 
 from rdiosock.services import RdioService
 
 
-class RdioPrivateService(RdioService):
-    __topic__ = 'private'
+class RdioFieldService(RdioService):
+    __topic__ = 'fields'
 
-    def publish_command(self, event, command_type, **kwargs):
-        data = {
-            'command': {
-                'type': command_type
-            }
-        }
+    def __init__(self, sock):
+        self.fields = {}
 
-        for key, value in kwargs.items():
-            data['command'][key] = value
+        super(RdioFieldService, self).__init__(sock)
 
-        self.publish_event(event, data)
+    def update(self, fields):
+        for field, value in fields.items():
+            self.fields[field] = value
+            print '[RdioFieldService]', 'field updated:', field
+
+    def received_message(self, message):
+        if message.data['event'] == 'changed':
+            if 'fields' not in message.data:
+                print '[RdioFieldService]', 'invalid message received'
+            else:
+                self.update(message.data['fields'])

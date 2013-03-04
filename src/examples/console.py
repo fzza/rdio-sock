@@ -57,11 +57,16 @@ def login():
         raise
 
 
-def connected(message):
-    print "connected"
+def pubsub_connected():
+    print "pubsub_connected"
+
+    # Subscribe services into pubsub updates
+    rdio.pubsub.subscribe(rdio.services.fields)
 
 if __name__ == '__main__':
     login()
-    rdio.pubsub.connect(connected)
+
+    rdio.pubsub.on_connected.bind(pubsub_connected)
+    rdio.pubsub.connect()
 
     code.interact(local=globals())

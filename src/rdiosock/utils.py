@@ -59,6 +59,23 @@ def random_id():
     return randint(0, 10000000)
 
 
+# EventHook
+
+class EventHook(object):
+    def __init__(self):
+        self.__handlers = []
+
+    def bind(self, handler):
+        self.__handlers.append(handler)
+
+    def unbind(self, handler):
+        self.__handlers.remove(handler)
+
+    def fire(self, *args, **kwargs):
+        for handler in self.__handlers:
+            handler(*args, **kwargs)
+
+
 #
 # Other Utils
 #

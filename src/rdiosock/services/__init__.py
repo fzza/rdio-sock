@@ -16,13 +16,13 @@
 
 
 class RdioService(object):
-    __key__ = None
+    __topic__ = None
 
     def __init__(self, sock):
         self._sock = sock
 
     def publish(self, data):
-        self._sock.pubsub.publish(self._sock.user.key + '/' + self.__key__, data)
+        self._sock.pubsub.publish(self._sock.user.key + '/' + self.__topic__, data)
 
     def publish_event(self, event, data=None):
         if data is None:
@@ -31,3 +31,21 @@ class RdioService(object):
         data['event'] = event
 
         self.publish(data)
+
+    def received_message(self, message):
+        raise NotImplementedError()
+
+    def __subscribe__(self, pubsub, target):
+        """Subscribe service to pubsub messages
+
+        @param pubsub: Rdio pubsub instance
+        @type pubsub: RdioPubSub
+
+        @param target: Topic target
+        @type target: str
+        """
+
+        if self.__topic__ is None:
+            raise NotImplementedError()
+
+        pubsub.subscribe_topic(self.__topic__, self.received_message, target)

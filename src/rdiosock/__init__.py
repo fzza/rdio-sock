@@ -19,6 +19,7 @@ import re
 import requests
 from rdiosock.common import PATTERN_ENV
 from rdiosock.remote import RdioRemote
+from rdiosock.services.fields import RdioFieldService
 from rdiosock.services.private import RdioPrivateService
 from rdiosock.pubsub import RdioPubSub
 from rdiosock.user import RdioUser
@@ -107,4 +108,5 @@ class RdioSockServiceManager:
         self._sock = sock
 
         # Services
+        self.fields = RdioFieldService(self._sock)
         self.private = RdioPrivateService(self._sock)

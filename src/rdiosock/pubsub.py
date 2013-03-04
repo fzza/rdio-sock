@@ -18,7 +18,7 @@
 import json
 from ws4py.client.threadedclient import WebSocketClient
 from rdiosock.exceptions import RdioException, RdioApiError
-from rdiosock.utils import camel_to_score, update_attrs, randint, random_id
+from rdiosock.utils import camel_to_score, update_attrs, randint, random_id, EventHook
 
 
 class RdioPubSub:
@@ -26,20 +26,21 @@ class RdioPubSub:
         self._sock = sock
         self.ws = None
 
-        # Callbacks
-        self.connected_callback = None
+        # Events
+        self.on_connected = EventHook()
+
+        # { "<topic>" : [<callbacks] }
+        self._subscription_callbacks = {}
 
         # PubSub info
         self.topic = None
         self.token = None
         self.servers = None
 
-    def connect(self, connected_callback=None):
+    def connect(self):
         if self._sock.user.authorization_key is None or \
                 self._sock.user.session_cookie is None:
             raise RdioException()
-
-        self.connected_callback = connected_callback
 
         self.update_info()  # Update our PubSub info
 
@@ -61,39 +62,87 @@ class RdioPubSub:
         print '-------------------------------'
 
     def publish(self, topic, data):
+        """Publish PubSub message
+
+        @param topic: PubSub topic
+        @type topic: str
+
+        @param data: json serializable object
+        @type data: object
+        """
         self.ws.send_message(RdioPubSubMessage(
             RdioPubSubMessage.METHOD_PUB, topic, data
         ))
 
-    def subscribe(self, topic):
+    def subscribe(self, service, target=None):
+        """Subscribe to RdioService pubsub messages
+
+        @param service: RdioService instance
+        @type service: RdioService
+
+        @param target: Target (User, Playlist) or None to indicate current user
+        @type target: str or None
+        """
+        if target is None:
+            target = self._sock.user.key
+        service.__subscribe__(self, target)
+
+    def subscribe_topic(self, topic, callback, target=None):
+        """ Subscribe to pubsub messages
+
+        @param topic: PubSub topic to subscribe to
+        @type topic: str
+
+        @param callback: callback(message) will be called when messages are received
+        @type callback: function
+        """
+        topic = topic.strip('/')
+        if '/' not in topic:
+            if target is not None:
+                topic = target + '/' + topic
+            else:
+                raise ValueError()
+
+        if topic not in self._subscription_callbacks:
+            self._subscription_callbacks[topic] = []
+
+        if callback not in self._subscription_callbacks[topic]:
+            self._subscription_callbacks[topic].append(callback)
+
         self.ws.send_message(RdioPubSubMessage(
             RdioPubSubMessage.METHOD_SUB, topic
         ))
+
+        print "[RdioPubSub]", "subscribed to", topic
 
     def received_message(self, message):
         print "[RdioPubSub] received_message:", message
 
         if message.method == RdioPubSubMessage.METHOD_CONNECTED:
-            # Call the connected_callback
-            if self.connected_callback is not None:
-                self.connected_callback(message)
-
+            self.on_connected.fire()
         elif message.method == RdioPubSubMessage.METHOD_PUB:
-            pass
+            # Send message to subscribed callbacks
+            if message.topic in self._subscription_callbacks:
+                for callback in self._subscription_callbacks[message.topic]:
+                    callback(message)
 
 
 class RdioPubSubClient(WebSocketClient):
     def __init__(self, pubsub, received_message):
         self.pubsub = pubsub
-
         self._received_message = received_message
 
-        # Choose a random server
-        server_id = randint(0, len(self.pubsub.servers) - 1)
-        self.current_server = self.pubsub.servers[server_id]
-        print "[RdioPubSubClient] using server :", self.current_server
+        super(RdioPubSubClient, self).__init__(self._select_random_server(False))
 
-        super(RdioPubSubClient, self).__init__('ws://' + self.current_server)
+    def _select_random_server(self, parse=True):
+        server_id = randint(0, len(self.pubsub.servers) - 1)
+        self.url = 'ws://' + self.pubsub.servers[server_id]
+
+        if parse:
+            self._parse_url()
+
+        print "[RdioPubSubClient] selected server :", self.url
+        return self.url
 
     def send_message(self, message):
         print "[RdioPubSubClient] send_message", message
@@ -116,6 +165,9 @@ class RdioPubSubClient(WebSocketClient):
     def closed(self, code, reason=None):
         print "[RdioPubSubClient] closed:", code, reason
 
+        if code == 1006:
+            self.connect()
+
     def received_message(self, message):
         self._received_message(RdioPubSubMessage.parse(str(message)))
 
@@ -133,6 +185,9 @@ class RdioPubSubMessage:
         METHOD_SUB
     )
 
+    SNIP_MIN_LENGTH = 100
+    SNIP_STRING = "[...snip...]"
+
     def __init__(self, method, topic, data=None):
         self.method = method
         self.topic = topic
@@ -140,9 +195,10 @@ class RdioPubSubMessage:
 
     @staticmethod
     def parse(message):
-        message = message.split(' ')
+        message = message.split(' ', 1)
         if len(message) != 2:
-            print 'ERROR:', 'invalid message'
+            print 'ERROR:', 'invalid message', 'len =', len(message)
+            print message
             return None
         method, data = message
 
@@ -154,12 +210,20 @@ class RdioPubSubMessage:
         if '|' not in data:
             return RdioPubSubMessage(method, data)
 
-        topic, data = data.split('|')
+        topic, data = data.split('|', 1)
 
         return RdioPubSubMessage(method, topic, json.loads(data))
 
     def __str__(self):
         if self.data:
-            return self.method + ' ' + self.topic + '|' + json.dumps(self.data)
+            data_str = json.dumps(self.data)
+            if len(data_str) >= self.SNIP_MIN_LENGTH:
+                part_length = (self.SNIP_MIN_LENGTH / 2) - (len(self.SNIP_STRING) / 2)
+                data_str = "".join([
+                    data_str[:part_length],
+                    self.SNIP_STRING,
+                    data_str[-part_length:]
+                ])
+            return self.method + ' ' + self.topic + '|' + data_str
         else:
             return self.method + ' ' + self.topic
