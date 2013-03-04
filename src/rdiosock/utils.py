@@ -130,6 +130,7 @@ def update_attrs(obj, attr_dict, trace=False):
             if trace:
                 print name, ':', value
 
+
 def parse_json(data, default=None):
     o = default
     try:

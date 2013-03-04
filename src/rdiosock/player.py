@@ -13,15 +13,39 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from rdiosock.utils import EventHook, camel_to_score
 
 
-class RdioPlayer(object):
+class RdioPlayer(EventHook):
     REPEAT_ALL = 2
     REPEAT_ONE = 1
     REPEAT_NONE = 0
 
     def __init__(self, sock):
+        """
+        @type sock: RdioSock
+        """
+        super(RdioPlayer, self).__init__()
         self._sock = sock
+
+        # fields
+        self.last_song_played = None
+
+        # Bind field events
+        self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSongPlayed')
+        self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSourcePlayed')
+        self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSongPlayTime')
+
+    def _field_changed(self, name, value):
+        name = camel_to_score(name)
+
+        print '_field_changed(%s) : ' % name,
+        if hasattr(self, name):
+            setattr(self, name, value)
+            print 'updated'
+        else:
+            print 'not found'
+        self[name](value)  # Fire event
 
     #
     # Fields

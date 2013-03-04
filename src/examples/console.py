@@ -68,7 +68,8 @@ def pubsub_connected():
     # Subscribe services into pubsub updates
     rdio.pubsub.subscribe(rdio.services.fields)
 
-    rdio.services.fields.on_changed.bind(song_changed, 'lastSongPlayed')
+    # Bind player events
+    rdio.player.bind(song_changed, 'last_song_played')
 
 if __name__ == '__main__':
     login()

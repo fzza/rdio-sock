@@ -32,7 +32,7 @@ class RdioFieldService(RdioService):
     def received_changed(self, fields):
         for field, value in fields.items():
             self.fields[field] = value
-            self.on_changed[field](value)
+            self.on_changed[field](field, value)
             print '[RdioFieldService]', 'field changed:', field
 
     def received_message(self, message):

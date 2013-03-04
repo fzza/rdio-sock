@@ -29,12 +29,12 @@ from rdiosock.utils import parse_json, api_url, return_data_type
 
 class RdioSock:
     def __init__(self):
+        self.pubsub = RdioPubSub(self)
+        self.services = RdioSockServiceManager(self)
+
         self.player = RdioPlayer(self)
         self.user = RdioUser(self)
         self.server_info = RdioServerInfo(self)
-
-        self.pubsub = RdioPubSub(self)
-        self.services = RdioSockServiceManager(self)
 
         # Environment Information
         self.env_loaded = False
