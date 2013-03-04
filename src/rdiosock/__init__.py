@@ -18,7 +18,7 @@
 import re
 import requests
 from rdiosock.common import PATTERN_ENV
-from rdiosock.remote import RdioRemote
+from rdiosock.player import RdioPlayer
 from rdiosock.services.fields import RdioFieldService
 from rdiosock.services.private import RdioPrivateService
 from rdiosock.pubsub import RdioPubSub
@@ -29,7 +29,7 @@ from rdiosock.utils import parse_json, api_url, return_data_type
 
 class RdioSock:
     def __init__(self):
-        self.remote = RdioRemote(self)
+        self.player = RdioPlayer(self)
         self.user = RdioUser(self)
         self.server_info = RdioServerInfo(self)
 

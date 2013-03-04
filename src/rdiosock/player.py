@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class RdioRemote(object):
+class RdioPlayer(object):
     REPEAT_ALL = 2
     REPEAT_ONE = 1
     REPEAT_NONE = 0
@@ -44,9 +44,9 @@ class RdioRemote(object):
 
     # Repeat`
     def set_repeat(self, repeat_type):
-        if repeat_type not in [RdioRemote.REPEAT_ALL,
-                               RdioRemote.REPEAT_ONE,
-                               RdioRemote.REPEAT_NONE]:
+        if repeat_type not in [RdioPlayer.REPEAT_ALL,
+                               RdioPlayer.REPEAT_ONE,
+                               RdioPlayer.REPEAT_NONE]:
             raise ValueError()
 
         self.set('repeat', repeat_type)

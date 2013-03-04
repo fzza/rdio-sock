@@ -25,8 +25,7 @@ Unofficial Rdio WebSocket Library
 
 #### Core ####
 *rdiosock.metadata* - Access Rdio music metadata (searching, lookup, etc...)    
-*rdiosock.player* - Local Rdio music player    
-*rdiosock.remote* - Remotely control an Rdio music player **(Media controls working, No PubSub events handled yet)**     
+*rdiosock.player* - Remote Rdio control and Local Rdio player **(Remote media controls working, No PubSub events handled yet)**
 *rdiosock.user* - User information (details, collection, playlists, friends/following, notifications)
 
 #### PubSub Services ####
@@ -40,7 +39,7 @@ Unofficial Rdio WebSocket Library
 *rdiosock.services.subscribers*    
 
 ## News ##
-**2013/03/04** - *rdiosock.remote* implemented with most media controls    
+**2013/03/04** - *rdiosock.remote* (now merged with *rdio.player*) implemented with most media controls
 **2013/03/02** - Started work on actual library    
 **2013/03/02** - Working Prototype    
 
@@ -58,17 +57,17 @@ Simple example showing current functionality as of **2013/03/04**
     [RdioPubSubClient] send_message CONNECT [...snip...]
     [RdioPubSub] received_message: CONNECTED [...snip...]
 
-    >>> rdio.remote.volume = 0.7
+    >>> rdio.player.volume = 0.7
     [RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "volume", "value": 0.7}, "event": "remote"}
 
-    >>> rdio.remote.pause()
+    >>> rdio.player.pause()
     [RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "pause"}, "event": "remote"}
 	
-	>>> rdio.remote.play()
+	>>> rdio.player.play()
 	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "play"}, "event": "remote"}
 
-	>>> rdio.remote.shuffle = True
+	>>> rdio.player.shuffle = True
 	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "shuffle", "value": true}, "event": "remote"}
 
-	>>> rdio.remote.repeat = rdio.remote.REPEAT_ALL
+	>>> rdio.player.repeat = rdio.player.REPEAT_ALL
 	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "repeat", "value": 2}, "event": "remote"}
