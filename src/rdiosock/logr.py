@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import inspect
 import logging
 import os
@@ -29,7 +30,7 @@ class Logr(object):
     handler = None
 
     @staticmethod
-    def configure(handler=None, formatter=None):
+    def configure(level=logging.WARNING, handler=None, formatter=None):
         """Configure Logr
 
         @param handler: Logger message handler
@@ -45,7 +46,7 @@ class Logr(object):
             handler = logging.StreamHandler()
 
         handler.setFormatter(formatter)
-        handler.level = logging.DEBUG
+        handler.setLevel(level)
         Logr.handler = handler
 
     @staticmethod

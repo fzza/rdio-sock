@@ -18,6 +18,7 @@
 import re
 import requests
 from rdiosock.common import PATTERN_ENV
+from rdiosock.logr import Logr
 from rdiosock.player import RdioPlayer
 from rdiosock.services.fields import RdioFieldService
 from rdiosock.services.private import RdioPrivateService
@@ -27,8 +28,16 @@ from rdiosock.server_info import RdioServerInfo
 from rdiosock.utils import parse_json, api_url, return_data_type
 
 
+DEFAULT_USERAGENT_CHROME = "Mozilla/5.0 (Windows NT 6.2; WOW64) " \
+                           "AppleWebKit/537.22 (KHTML, like Gecko) " \
+                           "Chrome/25.0.1364.97 " \
+                           "Safari/537.22"
+
+
 class RdioSock:
-    def __init__(self):
+    def __init__(self, useragent=DEFAULT_USERAGENT_CHROME):
+        self._useragent = useragent
+
         self.pubsub = RdioPubSub(self)
         self.services = RdioSockServiceManager(self)
 
@@ -86,21 +95,35 @@ class RdioSock:
     def _api_request(self, method, http_method, params=None, secure=True):
         url = api_url(method, secure)
 
+        Logr.debug("_api_request, url = %s", url)
+
+        # Params
         if params is None:
             params = {}
 
         params['extras[]'] = '*.WEB'
         params['method'] = method
-
-        cookies = {}
+        params['v'] = '20130124'
 
         if self.user.authorization_key is not None:
             params['_authorization_key'] = self.user.authorization_key
 
+        # Cookies
+        cookies = {}
+
         if self.user.session_cookie is not None:
             cookies['r'] = self.user.session_cookie
 
-        return requests.request(http_method, url, data=params, cookies=cookies)
+        # Headers
+        headers = {}
+
+        if self._useragent is not None:
+            headers['User-Agent'] = self._useragent
+
+        return requests.request(http_method, url,
+                                data=params,
+                                cookies=cookies,
+                                headers=headers)
 
 
 class RdioSockServiceManager:

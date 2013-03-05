@@ -13,6 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from pprint import pprint
+from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
 from rdiosock.utils import EventHook, camel_to_score
 
@@ -29,7 +31,9 @@ class RdioPlayer(EventHook):
         super(RdioPlayer, self).__init__()
         self._sock = sock
 
-        # fields
+        self.player_state = None
+        self.queue = None
+
         self.last_song_played = None
         self.last_song_play_time = None
         self.last_source_played = None
@@ -38,6 +42,8 @@ class RdioPlayer(EventHook):
         self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSongPlayed')
         self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSourcePlayed')
         self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSongPlayTime')
+
+        self.bind(self._song_changed, 'last_song_played')
 
     def _field_changed(self, name, value):
         name = camel_to_score(name)
@@ -48,6 +54,33 @@ class RdioPlayer(EventHook):
         else:
             Logr.warning('_field_changed(%s) : not found', name)
         self[name](value)  # Fire event
+
+    def _song_changed(self, song):
+        self.update()
+
+    def update(self):
+        params = {}
+
+        if self.player_state is not None and 'version' in self.player_state:
+            params['player_state_version'] = self.player_state['version']
+
+        if self.queue is not None and 'version' in self.queue:
+            params['queue_version'] = self.queue['version']
+
+        result = self._sock._api_post('getPlayerState', params, secure=False)
+
+        if result['status'] == 'error':
+            raise RdioApiError(result)
+
+        result = result['result']
+
+        if 'playerState' in result:
+            self._field_changed('player_state', result['playerState'])
+            Logr.debug("player_state updated to version %s", self.player_state['version'])
+
+        if 'queue' in result:
+            self._field_changed('queue', result['queue'])
+            Logr.debug("queue updated to version %s", self.queue['version'])
 
     #
     # Fields

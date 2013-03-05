@@ -29,7 +29,7 @@ from rdiosock.logr import Logr
 
 
 def api_url(method, secure=True):
-    return web_url('api/1') + method
+    return web_url('api/1', secure) + method
 
 
 def web_url(suffix, secure=True):

@@ -15,46 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import code
-import logging
 import os
-from pprint import pprint
 import sys
+from console import login
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.abspath(current_dir + "\\..\\"))
-
-from rdiosock import RdioSock
-from rdiosock.exceptions import RdioException
-from rdiosock.logr import Logr
-
-
-def login(rdio):
-    username = None
-    password = None
-
-    # Read auth from /console.auth
-    auth_path = current_dir + "/auth"
-    if os.path.exists(auth_path):
-        fp = open(auth_path)
-        data = fp.read()
-        fp.close()
-        username, password = data.split(':')
-
-    # Username console input
-    if username is None:
-        username = raw_input('Username: ')
-
-    # Password console input
-    if password is None:
-        password = raw_input('Password: ')
-
-    # Login to Rdio
-    try:
-        rdio.user.login(username, password)
-    except RdioException, e:
-        Logr.warning('failed to login, unable to continue')
-        raise
+from rdiosock import RdioSock, Logr
 
 
 def player_state_changed(player_state):
@@ -65,19 +33,17 @@ def player_state_changed(player_state):
 
     current_track = player_state['currentSource']['tracks']['items'][current_position]
 
-    Logr.info("%s - %s - %s", current_track['name'], current_track['album'], current_track['artist'])
+    print "%s - %s - %s" % (current_track['name'], current_track['album'], current_track['artist'])
+
 
 if __name__ == '__main__':
-    Logr.configure(logging.DEBUG)
+    print "Connecting..."
     rdio = RdioSock()
     login(rdio)
 
-    # Connected callback
+    # Connected Callback
     def pubsub_connected():
-        Logr.info("pubsub_connected")
-        # Subscribe services into pubsub updates
-        rdio.pubsub.subscribe(rdio.services.fields)
-
+        print "Connected"
         # Bind player events
         rdio.player.bind(player_state_changed, 'player_state')
 
@@ -87,4 +53,6 @@ if __name__ == '__main__':
 
     rdio.pubsub.connect()
 
-    code.interact(local=globals())
+    while True:
+        if raw_input() == 'exit':
+            break

@@ -54,8 +54,7 @@ class RdioUser:
             'username': username,
             'password': password,
             'remember': int(remember),
-            'nextUrl': '',
-            'v': '20130124'
+            'nextUrl': ''
         })
 
         if signin_result.get('status') != 'ok':
