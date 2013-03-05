@@ -13,7 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from pprint import pprint
+
+
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
 from rdiosock.utils import EventHook, camel_to_score

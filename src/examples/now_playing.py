@@ -44,6 +44,9 @@ if __name__ == '__main__':
     # Connected Callback
     def pubsub_connected():
         print "Connected"
+        # Subscribe services into pubsub updates
+        rdio.pubsub.subscribe(rdio.services.fields)
+
         # Bind player events
         rdio.player.bind(player_state_changed, 'player_state')
 
