@@ -13,7 +13,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from pprint import pprint
+from rdiosock.logr import Logr
 
 from rdiosock.services import RdioService
 from rdiosock.utils import EventHook
@@ -33,11 +33,10 @@ class RdioFieldService(RdioService):
         for field, value in fields.items():
             self.fields[field] = value
             self.on_changed[field](field, value)
-            print '[RdioFieldService]', 'field changed:', field
 
     def received_message(self, message):
         if message.data['event'] == 'changed':
             if 'fields' not in message.data:
-                print '[RdioFieldService]', 'invalid message received'
+                Logr.warning('invalid message received')
             else:
                 self.received_changed(message.data['fields'])

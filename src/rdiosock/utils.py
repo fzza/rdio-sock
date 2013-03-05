@@ -25,6 +25,8 @@ from rdiosock.exceptions import RdioNetworkError
 #
 # URL creation
 #
+from rdiosock.logr import Logr
+
 
 def api_url(method, secure=True):
     return web_url('api/1') + method
@@ -128,7 +130,7 @@ def update_attrs(obj, attr_dict, trace=False):
         if hasattr(obj, name):
             setattr(obj, name, value)
             if trace:
-                print name, ':', value
+                Logr.debug('%s : %s', name, value)
 
 
 def parse_json(data, default=None):

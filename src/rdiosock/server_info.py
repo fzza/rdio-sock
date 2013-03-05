@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from pprint import pprint
+from rdiosock.logr import Logr
 from rdiosock.utils import camel_to_score, update_attrs
 
 
@@ -31,6 +31,5 @@ class RdioServerInfo:
         self.locale = None
 
     def _load_env(self, serverInfo):
-        print '--------- ServerInfo ----------'
+        Logr.debug('--------- ServerInfo ----------')
         update_attrs(self, serverInfo, trace=True)
-        print '-------------------------------'

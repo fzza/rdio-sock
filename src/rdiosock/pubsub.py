@@ -19,6 +19,7 @@ import json
 import socket
 from ws4py.client.threadedclient import WebSocketClient
 from rdiosock.exceptions import RdioException, RdioApiError
+from rdiosock.logr import Logr
 from rdiosock.utils import camel_to_score, update_attrs, randint, random_id, EventHook
 
 
@@ -59,9 +60,8 @@ class RdioPubSub:
         if info_result['status'] == 'error':
             raise RdioApiError(info_result)
 
-        print '----------- PubSub ------------'
+        Logr.debug('----------- PubSub ------------')
         update_attrs(self, info_result['result'], trace=True)
-        print '-------------------------------'
 
     def publish(self, topic, data):
         """Publish PubSub message
@@ -115,10 +115,10 @@ class RdioPubSub:
             RdioPubSubMessage.METHOD_SUB, topic
         ))
 
-        print "[RdioPubSub]", "subscribed to", topic
+        Logr.info("subscribed to %s", topic)
 
     def received_message(self, message):
-        print "[RdioPubSub] received_message:", message
+        Logr.debug("received_message: %s", message)
 
         if message.method == RdioPubSubMessage.METHOD_CONNECTED:
             self.on_connected()
@@ -147,15 +147,15 @@ class RdioPubSubClient(WebSocketClient):
         if parse:
             self._parse_url()
 
-        print "[RdioPubSubClient] selected server :", self.url
+        Logr.info("selected server : %s", self.url)
         return self.url
 
     def send_message(self, message):
-        print "[RdioPubSubClient] send_message", message
+        Logr.debug("send_message %s", message)
         self.send(str(message))
 
     def opened(self):
-        print "[RdioPubSubClient] opened"
+        Logr.debug("opened")
 
         self.send_message(RdioPubSubMessage(
             RdioPubSubMessage.METHOD_CONNECT, self.pubsub.token, {
@@ -169,10 +169,10 @@ class RdioPubSubClient(WebSocketClient):
         }))
 
     def closed(self, code, reason=None):
-        print "[RdioPubSubClient] closed:", code, reason
+        Logr.info("closed: (%s) %s", code, reason)
 
         if code == 1006:
-            print "reconnecting"
+            Logr.info("reconnecting")
             self._reconnect()
 
     def received_message(self, message):
@@ -204,14 +204,15 @@ class RdioPubSubMessage:
     def parse(message):
         message = message.split(' ', 1)
         if len(message) != 2:
-            print 'ERROR:', 'invalid message', 'len =', len(message)
-            print message
+            Logr.warning("invalid message")
+            Logr.debug("len(message)= %s", len(message))
+            Logr.debug(message)
             return None
         method, data = message
 
         # Check if method is valid
         if method not in RdioPubSubMessage.METHODS:
-            print 'ERROR:', 'invalid message method', '"' + method + '"'
+            Logr.warning('invalid message method "%s"', method)
             return None
 
         if '|' not in data:

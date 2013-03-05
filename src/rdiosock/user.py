@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from pprint import pprint
 import requests
 from rdiosock.exceptions import RdioApiError, RdioNetworkError
+from rdiosock.logr import Logr
 from rdiosock.utils import web_url, camel_to_score, update_attrs
 
 
@@ -47,7 +47,7 @@ class RdioUser:
         if not self.env_loaded or self.authorization_key is None:
             self._sock._update_env(url=web_url('account/signin'))
 
-        print "--> user.login"
+        Logr.debug("login()")
 
         # API 'signIn' request (get the redirect_url)
         signin_result = self._sock._api_post('signIn', {
@@ -69,7 +69,7 @@ class RdioUser:
         if redirect_url is None or redirect_url == '':
             raise RdioApiError()
 
-        print 'redirect_url', ':', redirect_url
+        Logr.debug('redirect_url : %s', redirect_url)
 
         # Web redirect request (get the session_cookie)
         redirect_result = requests.get(redirect_url)
@@ -84,11 +84,10 @@ class RdioUser:
 
         # TODO: Store the cookie for later use
         self.session_cookie = redirect_result.history[0].cookies['r']
-        print 'session_cookie', ':', self.session_cookie
+        Logr.debug('session_cookie : %s', self.session_cookie)
 
         self._sock._update_env(data=redirect_result.text)
 
     def _load_env(self, currentUser):
-        print '------------- User ------------'
+        Logr.debug('------------- User ------------')
         update_attrs(self, currentUser, trace=True)
-        print '-------------------------------'

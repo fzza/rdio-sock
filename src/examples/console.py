@@ -17,15 +17,14 @@
 
 import code
 import os
-from pprint import pprint
 import sys
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
 sys.path.insert(0, os.path.abspath(current_dir + "\\..\\"))
 
 from rdiosock import RdioSock
 from rdiosock.exceptions import RdioException
+from rdiosock.logr import Logr
 
 rdio = RdioSock()
 
@@ -35,7 +34,7 @@ def login():
     password = None
 
     # Read auth from /console.auth
-    auth_path = current_dir + "/console.auth"
+    auth_path = current_dir + "/auth"
     if os.path.exists(auth_path):
         fp = open(auth_path)
         data = fp.read()
@@ -54,16 +53,16 @@ def login():
     try:
         rdio.user.login(username, password)
     except RdioException, e:
-        print 'failed to login, unable to continue'
+        Logr.warning('failed to login, unable to continue')
         raise
 
 
 def song_changed(song):
-    print "song_changed", " - ".join([song['name'], song['album'], song['artist']])
+    Logr.info("song_changed %s - %s - %s", song['name'], song['album'], song['artist'])
 
 
 def pubsub_connected():
-    print "pubsub_connected"
+    Logr.info("pubsub_connected")
 
     # Subscribe services into pubsub updates
     rdio.pubsub.subscribe(rdio.services.fields)
