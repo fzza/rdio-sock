@@ -18,6 +18,7 @@
 import code
 import logging
 import os
+from pprint import pprint
 import sys
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,14 +58,24 @@ def login(rdio):
 
 
 def player_state_changed(player_state):
+    """
+    @type player_state: RdioPlayerState
+    """
     Logr.info("player_state_changed")
 
-    current_position = player_state['currentSource']['currentPosition']
+    current_position = player_state.current_source.current_position
     Logr.info("current_position = %s", current_position)
 
-    current_track = player_state['currentSource']['tracks']['items'][current_position]
+    current_track = player_state.current_source.tracks[current_position]
 
-    Logr.info("%s - %s - %s", current_track['name'], current_track['album'], current_track['artist'])
+    Logr.info("%s - %s - %s", current_track.name, current_track.album, current_track.artist)
+
+
+def queue_changed(queue):
+    """
+    @type queue: RdioQueue
+    """
+    Logr.info("%s", queue.track_keys)
 
 if __name__ == '__main__':
     Logr.configure(logging.DEBUG)
@@ -79,6 +90,7 @@ if __name__ == '__main__':
 
         # Bind player events
         rdio.player.bind(player_state_changed, 'player_state')
+        rdio.player.bind(queue_changed, 'queue')
 
         rdio.player.update()
 

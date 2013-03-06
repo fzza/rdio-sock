@@ -26,14 +26,17 @@ from rdiosock import RdioSock, Logr
 
 
 def player_state_changed(player_state):
+    """
+    @type player_state: RdioPlayerState
+    """
     Logr.info("player_state_changed")
 
-    current_position = player_state['currentSource']['currentPosition']
+    current_position = player_state.current_source.current_position
     Logr.info("current_position = %s", current_position)
 
-    current_track = player_state['currentSource']['tracks']['items'][current_position]
+    current_track = player_state.current_source.tracks[current_position]
 
-    print "%s - %s - %s" % (current_track['name'], current_track['album'], current_track['artist'])
+    print "%s - %s - %s" % (current_track.name, current_track.album, current_track.artist)
 
 
 if __name__ == '__main__':

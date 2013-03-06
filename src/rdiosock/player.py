@@ -17,6 +17,8 @@
 
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
+from rdiosock.objects.player_state import RdioPlayerState
+from rdiosock.objects.queue import RdioQueue
 from rdiosock.utils import EventHook, camel_to_score
 
 
@@ -32,7 +34,9 @@ class RdioPlayer(EventHook):
         super(RdioPlayer, self).__init__()
         self._sock = sock
 
+        #: @type: RdioPlayerState
         self.player_state = None
+        #: @type: RdioQueue
         self.queue = None
 
         self.last_song_played = None
@@ -62,11 +66,11 @@ class RdioPlayer(EventHook):
     def update(self):
         params = {}
 
-        if self.player_state is not None and 'version' in self.player_state:
-            params['player_state_version'] = self.player_state['version']
+        if self.player_state is not None and self.player_state.version is not None:
+            params['player_state_version'] = self.player_state.version
 
-        if self.queue is not None and 'version' in self.queue:
-            params['queue_version'] = self.queue['version']
+        if self.queue is not None and self.queue.version is not None:
+            params['queue_version'] = self.queue.version
 
         result = self._sock._api_post('getPlayerState', params, secure=False)
 
@@ -76,12 +80,12 @@ class RdioPlayer(EventHook):
         result = result['result']
 
         if 'playerState' in result:
-            self._field_changed('player_state', result['playerState'])
-            Logr.debug("player_state updated to version %s", self.player_state['version'])
+            self._field_changed('player_state', RdioPlayerState.parse(result['playerState']))
+            Logr.debug("player_state updated to version %s", self.player_state.version)
 
         if 'queue' in result:
-            self._field_changed('queue', result['queue'])
-            Logr.debug("queue updated to version %s", self.queue['version'])
+            self._field_changed('queue', RdioQueue.parse(result['queue']))
+            Logr.debug("queue updated to version %s", self.queue.version)
 
     #
     # Fields

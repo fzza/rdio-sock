@@ -161,7 +161,7 @@ class LogrFormatter(logging.Formatter):
         s = "%(asctime)s    %(name)s    %(levelname)s    %(message)s" % {
             'asctime': record.asctime,
             'name': record.name[-self.LENGTH_NAME:].rjust(self.LENGTH_NAME, ' '),
-            'levelname': record.levelname[-self.LENGTH_LEVEL_NAME:].rjust(self.LENGTH_LEVEL_NAME, ' '),
+            'levelname': record.levelname[:self.LENGTH_LEVEL_NAME],
             'message': record.message
         }
 
