@@ -13,12 +13,14 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from pprint import pprint
 
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
 from rdiosock.objects.player_state import RdioPlayerState
 from rdiosock.objects.queue import RdioQueue
+from rdiosock.objects.source import RdioSource
+from rdiosock.objects.track import RdioTrack
 from rdiosock.utils import EventHook, camel_to_score
 
 
@@ -39,8 +41,10 @@ class RdioPlayer(EventHook):
         #: @type: RdioQueue
         self.queue = None
 
+        #: @type: RdioTrack
         self.last_song_played = None
         self.last_song_play_time = None
+        #: @type: RdioSource
         self.last_source_played = None
 
         # Bind field events
@@ -48,22 +52,27 @@ class RdioPlayer(EventHook):
         self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSourcePlayed')
         self._sock.services.fields.on_changed.bind(self._field_changed, 'lastSongPlayTime')
 
-        self.bind(self._song_changed, 'last_song_played')
+        # Update 'player_state' or 'queue' if we receive a changed event
+        self._sock.services.private.on_player_state_changed.bind(self.update)
+        self._sock.services.private.on_queue_changed.bind(self.update)
 
     def _field_changed(self, name, value):
         name = camel_to_score(name)
 
         if hasattr(self, name):
+            if name == 'last_song_played':
+                value = RdioTrack.parse(value)
+            elif name == 'last_source_played':
+                value = RdioSource.parse(value)
+
             setattr(self, name, value)
             Logr.debug('_field_changed(%s) : updated', name)
         else:
             Logr.warning('_field_changed(%s) : not found', name)
         self[name](value)  # Fire event
 
-    def _song_changed(self, song):
-        self.update()
-
     def update(self):
+        Logr.debug("update")
         params = {}
 
         if self.player_state is not None and self.player_state.version is not None:
@@ -79,10 +88,12 @@ class RdioPlayer(EventHook):
 
         result = result['result']
 
+        # Fire 'player_state' changed event
         if 'playerState' in result:
             self._field_changed('player_state', RdioPlayerState.parse(result['playerState']))
             Logr.debug("player_state updated to version %s", self.player_state.version)
 
+        # Fire 'queue' changed event
         if 'queue' in result:
             self._field_changed('queue', RdioQueue.parse(result['queue']))
             Logr.debug("queue updated to version %s", self.queue.version)

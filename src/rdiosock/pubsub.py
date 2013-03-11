@@ -16,11 +16,10 @@
 
 
 import json
-import socket
 from ws4py.client.threadedclient import WebSocketClient
 from rdiosock.exceptions import RdioException, RdioApiError
 from rdiosock.logr import Logr
-from rdiosock.utils import camel_to_score, update_attrs, randint, random_id, EventHook
+from rdiosock.utils import update_attrs, randint, random_id, EventHook
 
 
 class RdioPubSub:
@@ -127,6 +126,8 @@ class RdioPubSub:
             if message.topic in self._subscription_callbacks:
                 for callback in self._subscription_callbacks[message.topic]:
                     callback(message)
+            else:
+                Logr.warning("Unhandled message topic: %s", message.topic)
 
     def reconnect(self):
         self.connect(False)

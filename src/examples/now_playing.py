@@ -22,21 +22,16 @@ from console import login
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.abspath(current_dir + "\\..\\"))
-from rdiosock import RdioSock, Logr
+from rdiosock import RdioSock
 
 
-def player_state_changed(player_state):
+def last_song_played_changed(last_song_played):
     """
-    @type player_state: RdioPlayerState
+    @type last_song_played: RdioTrack
     """
-    Logr.info("player_state_changed")
-
-    current_position = player_state.current_source.current_position
-    Logr.info("current_position = %s", current_position)
-
-    current_track = player_state.current_source.tracks[current_position]
-
-    print "%s - %s - %s" % (current_track.name, current_track.album, current_track.artist)
+    print "%s - %s - %s" % (last_song_played.name,
+                            last_song_played.album,
+                            last_song_played.artist)
 
 
 if __name__ == '__main__':
@@ -50,10 +45,15 @@ if __name__ == '__main__':
         # Subscribe services into pubsub updates
         rdio.pubsub.subscribe(rdio.services.fields)
 
-        # Bind player events
-        rdio.player.bind(player_state_changed, 'player_state')
+        # Get notified when song changes (when 'last_song_played' field changes)
+        rdio.player.bind(last_song_played_changed, 'last_song_played')
 
-        rdio.player.update()
+        rdio.player.update()  # Get latest player_state
+
+        # Get currently playing song from player_state
+        last_song_played_changed(rdio.player.player_state.current_source.tracks[
+            rdio.player.player_state.current_source.current_position
+        ])
 
     rdio.pubsub.on_connected.bind(pubsub_connected)
 

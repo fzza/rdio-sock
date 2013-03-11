@@ -15,11 +15,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from rdiosock import Logr
 from rdiosock.services import RdioService
+from rdiosock.utils import EventHook
 
 
 class RdioPrivateService(RdioService):
     __topic__ = 'private'
+
+    def __init__(self, sock):
+        self.on_player_state_changed = EventHook()
+        self.on_queue_changed = EventHook()
+
+        super(RdioPrivateService, self).__init__(sock)
+
+    def received_message(self, message):
+        Logr.debug("received_message: %s", message.data['event'])
+
+        if message.data['event'] == 'playerStateChanged':
+            Logr.debug("on_player_state_changed")
+            self.on_player_state_changed()
+        elif message.data['event'] == 'queueChanged':
+            Logr.debug("on_queue_changed")
+            self.on_queue_changed()
+        else:
+            Logr.warning("Unhandled message received: %s", message.data['event'])
 
     def publish_command(self, event, command_type, **kwargs):
         data = {
