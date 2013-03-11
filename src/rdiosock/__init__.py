@@ -22,6 +22,7 @@ import time
 from rdiosock import syrequests
 from rdiosock.common import PATTERN_ENV
 from rdiosock.logr import Logr
+from rdiosock.metadata import RdioMetadata
 from rdiosock.player import RdioPlayer
 from rdiosock.services.fields import RdioFieldService
 from rdiosock.services.private import RdioPrivateService
@@ -44,6 +45,7 @@ class RdioSock:
         self.pubsub = RdioPubSub(self)
         self.services = RdioSockServiceManager(self)
 
+        self.metadata = RdioMetadata(self)
         self.player = RdioPlayer(self)
         self.user = RdioUser(self)
         self.server_info = RdioServerInfo(self)
@@ -90,31 +92,36 @@ class RdioSock:
     #
 
     def _api_get(self, method, params=None, secure=True, response_callback=None,
-                 return_type='json'):
+                 return_type='json', extras=None):
         return return_data_type(
-            self._api_request(method, 'GET', params, secure, response_callback),
+            self._api_request(method, 'GET', params, secure, response_callback, extras),
             return_type
         )
 
     def _api_post(self, method, params=None, secure=True, response_callback=None,
-                  return_type='json'):
+                  return_type='json', extras=None):
         return return_data_type(
-            self._api_request(method, 'POST', params, secure, response_callback),
+            self._api_request(method, 'POST', params, secure, response_callback, extras),
             return_type
         )
 
     def _api_request(self, method, http_method, params=None, secure=True,
-                     response_callback=None):
+                     response_callback=None, extras=None):
         url = api_url(method, secure)
 
         Logr.debug("_api_request, url = %s", url)
         start = time.time()
 
+        if extras is None:
+            extras = []
+
         # Params
         if params is None:
             params = {}
 
-        params['extras[]'] = '*.WEB'
+        extras.append('*.WEB')
+        params['extras[]'] = extras
+
         params['method'] = method
         params['v'] = '20130124'
 
