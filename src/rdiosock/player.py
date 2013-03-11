@@ -13,7 +13,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from pprint import pprint
+
 
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
@@ -35,6 +35,8 @@ class RdioPlayer(EventHook):
         """
         super(RdioPlayer, self).__init__()
         self._sock = sock
+
+        self.update_callback = None
 
         #: @type: RdioPlayerState
         self.player_state = None
@@ -71,9 +73,10 @@ class RdioPlayer(EventHook):
             Logr.warning('_field_changed(%s) : not found', name)
         self[name](value)  # Fire event
 
-    def update(self):
+    def update(self, callback=None):
         Logr.debug("update")
         params = {}
+        self.update_callback = callback
 
         if self.player_state is not None and self.player_state.version is not None:
             params['player_state_version'] = self.player_state.version
@@ -81,7 +84,11 @@ class RdioPlayer(EventHook):
         if self.queue is not None and self.queue.version is not None:
             params['queue_version'] = self.queue.version
 
-        result = self._sock._api_post('getPlayerState', params, secure=False)
+        self._sock._api_post('getPlayerState', params, False,
+                             response_callback=self._update_callback)
+
+    def _update_callback(self, result):
+        Logr.debug("_update_callback")
 
         if result['status'] == 'error':
             raise RdioApiError(result)
@@ -97,6 +104,10 @@ class RdioPlayer(EventHook):
         if 'queue' in result:
             self._field_changed('queue', RdioQueue.parse(result['queue']))
             Logr.debug("queue updated to version %s", self.queue.version)
+
+        if self.update_callback is not None:
+            self.update_callback(self.player_state, self.queue)
+            self.update_callback = None
 
     #
     # Fields

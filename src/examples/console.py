@@ -18,7 +18,6 @@
 import code
 import logging
 import os
-from pprint import pprint
 import sys
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -89,12 +88,13 @@ if __name__ == '__main__':
         rdio.player.bind(last_song_played_changed, 'last_song_played')
         rdio.player.bind(queue_changed, 'queue')
 
-        rdio.player.update()
+        def update_callback(player_state, queue):
+            # Get currently playing song from player_state
+            last_song_played_changed(player_state.current_source.tracks[
+                player_state.current_source.current_position
+            ])
 
-        # Get currently playing song from player_state
-        last_song_played_changed(rdio.player.player_state.current_source.tracks[
-            rdio.player.player_state.current_source.current_position
-        ])
+        rdio.player.update(update_callback)
 
     rdio.pubsub.on_connected.bind(pubsub_connected)
 

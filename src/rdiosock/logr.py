@@ -56,7 +56,10 @@ class Logr(object):
 
     @staticmethod
     def _get_name_from_path(filename):
-        return os.path.splitext(os.path.basename(filename))[0]
+        try:
+            return os.path.splitext(os.path.basename(filename))[0]
+        except TypeError:
+            return "<unknown>"
 
     @staticmethod
     def get_logger_name():

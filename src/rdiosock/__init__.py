@@ -16,7 +16,10 @@
 
 
 import re
+import datetime
 import requests
+import time
+from rdiosock import syrequests
 from rdiosock.common import PATTERN_ENV
 from rdiosock.logr import Logr
 from rdiosock.player import RdioPlayer
@@ -86,16 +89,26 @@ class RdioSock:
     # API
     #
 
-    def _api_get(self, method, params=None, secure=True, return_type='json'):
-        return return_data_type(self._api_request(method, 'GET', params, secure), return_type)
+    def _api_get(self, method, params=None, secure=True, response_callback=None,
+                 return_type='json'):
+        return return_data_type(
+            self._api_request(method, 'GET', params, secure, response_callback),
+            return_type
+        )
 
-    def _api_post(self, method, params=None, secure=True, return_type='json'):
-        return return_data_type(self._api_request(method, 'POST', params, secure), return_type)
+    def _api_post(self, method, params=None, secure=True, response_callback=None,
+                  return_type='json'):
+        return return_data_type(
+            self._api_request(method, 'POST', params, secure, response_callback),
+            return_type
+        )
 
-    def _api_request(self, method, http_method, params=None, secure=True):
+    def _api_request(self, method, http_method, params=None, secure=True,
+                     response_callback=None):
         url = api_url(method, secure)
 
         Logr.debug("_api_request, url = %s", url)
+        start = time.time()
 
         # Params
         if params is None:
@@ -120,10 +133,26 @@ class RdioSock:
         if self._useragent is not None:
             headers['User-Agent'] = self._useragent
 
-        return requests.request(http_method, url,
-                                data=params,
-                                cookies=cookies,
-                                headers=headers)
+        job = syrequests.request(
+            http_method, url,
+            data=params,
+            cookies=cookies,
+            headers=headers
+        )
+
+        result = None
+
+        if response_callback is None:
+            result = job.execute_sync()
+        else:
+            job.execute(response_callback)
+            result = job
+
+        Logr.debug("_api_request, elapsed = %.0fms",
+                   datetime.timedelta(
+                       seconds=time.time() - start).total_seconds() * 1000)
+
+        return result
 
 
 class RdioSockServiceManager:

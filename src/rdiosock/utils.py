@@ -18,6 +18,7 @@
 import json
 from random import Random
 import re
+from requests import Response
 from rdiosock.common import URL_BASE, PATTERN_CAMEL2SCORE_FIRST, PATTERN_CAMEL2SCORE_ALL
 from rdiosock.exceptions import RdioNetworkError
 
@@ -142,13 +143,10 @@ def parse_json(data, default=None):
     return o
 
 
-def return_data_type(request, return_type):
-    if return_type == 'request':
-        return request
-
-    if return_type == 'json':
+def return_data_type(request, return_type='json'):
+    if type(request) is Response and return_type == 'json':
         if request.status_code != 200:
             raise RdioNetworkError("HTTP request returned an unexpected status_code", request.status_code)
         return json.loads(request.text)
 
-    raise ValueError()
+    return request
