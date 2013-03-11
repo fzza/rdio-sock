@@ -42,6 +42,7 @@ if __name__ == '__main__':
         print "Connected"
         # Subscribe services into pubsub updates
         rdio.pubsub.subscribe(rdio.services.fields)
+        rdio.pubsub.subscribe(rdio.services.private)
 
         # Bind to 'on_song_changed' event
         rdio.player.on_song_changed.bind(song_changed)
