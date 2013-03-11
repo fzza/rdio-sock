@@ -20,6 +20,7 @@ from rdiosock import Logr
 from rdiosock.utils import camel_to_score
 
 
+
 class RdioBaseItem(object):
     PARSE_NAME_MAP = {}
     PARSE_NAME_IGNORE = []
@@ -63,12 +64,12 @@ class RdioBaseItem(object):
             if score_key in cls.PARSE_NAME_IGNORE:
                 continue  # Skip this key
 
-            if hasattr(instance, score_key):
-                if score_key in cls.PARSE_VALUE_METHODS:
-                    value = getattr(cls, cls.PARSE_VALUE_METHODS[score_key])(value)
+            if score_key in cls.PARSE_VALUE_METHODS:
+                getattr(instance, cls.PARSE_VALUE_METHODS[score_key])(score_key, value)
+            elif hasattr(instance, score_key):
                 setattr(instance, score_key, value)
             else:
-                Logr.warning("Unable to store data, key: %s", score_key)
+                Logr.warning("Unable to store data in '%s', key: '%s', value: '%s'", cls.__name__, score_key, value)
 
         return instance
 
@@ -129,18 +130,6 @@ class RdioMediaItem(RdioNamedItem, RdioIconItem):
 
         if self._is_initialized('RdioMediaItem'):
             return
-
-        #: @type: str
-        self.album_key = None
-        #: @type: str
-        self.album_url = None
-
-        #: @type: str
-        self.artist = None
-        #: @type: str
-        self.artist_key = None
-        #: @type: str
-        self.artist_url = None
 
         #: @type: bool
         self.can_sample = None

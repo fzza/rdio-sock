@@ -1,4 +1,6 @@
 from pprint import pprint
+from rdiosock.exceptions import RdioApiError
+from rdiosock.objects.collection import RdioList
 
 
 class SEARCH_TYPES:
@@ -128,22 +130,30 @@ class RdioMetadata(object):
         """
         self._sock = sock
 
-    def search(self, query, search_type=SEARCH_TYPES.ALL, extras=SEARCH_EXTRAS.ALL):
+    def search(self, query, search_types=SEARCH_TYPES.ALL, search_extras=SEARCH_EXTRAS.ALL):
         """Search for media item.
 
         @param query: Search query
         @type query: str
+
+        @param search_type: Search type (SEARCH_TYPES)
+        @type search_type: int or list of int
+
+        @param search_extras: Search result extras to include (SEARCH_EXTRAS)
+        @type search_extras: int or list of int
         """
-
-        search_type = SEARCH_TYPES.parse(search_type)
-        extras = SEARCH_EXTRAS.parse(extras)
-
-        print search_type
-        print extras
 
         result = self._sock._api_post('search', {
             'query': query,
-            'types[]': search_type
-        }, secure=False, extras=extras)
+            'types[]': SEARCH_TYPES.parse(search_types)
+        }, secure=False, extras=SEARCH_EXTRAS.parse(search_extras))
 
-        pprint(result)
+        if result['status'] == 'error':
+            raise RdioApiError(result)
+
+        result = result['result']
+
+        if result['type'] == 'list':
+            return RdioList.parse(result)
+        else:
+            raise NotImplementedError()

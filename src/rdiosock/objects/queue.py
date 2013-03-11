@@ -35,9 +35,8 @@ class RdioQueue(RdioBaseItem):
         #: @type: int
         self.version = None
 
-    @staticmethod
-    def parse_track_keys(value):
-        return_value = []
+    def parse_track_keys(self, key, value):
+        track_keys = []
         for item in value:
-            return_value.append(item['key'])
-        return return_value
+            track_keys.append(item['key'])
+        self.track_keys = track_keys

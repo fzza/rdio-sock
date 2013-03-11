@@ -15,41 +15,56 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from rdiosock.objects.base import RdioMediaItem
+from rdiosock.objects.base import RdioNamedItem, RdioIconItem
 
 
-class RdioTrack(RdioMediaItem):
+class RdioArtist(RdioNamedItem, RdioIconItem):
     def __init__(self):
-        RdioMediaItem.__init__(self)
+        RdioNamedItem.__init__(self)
+        RdioIconItem.__init__(self)
 
         #: @type: int
-        self.track_num = None
+        self.album_count = None
+
+        # TODO: Unknown type
+        self.band_members = None
 
         #: @type: str
-        self.artist = None
+        self.banner_alignment = None
         #: @type: str
-        self.artist_key = None
+        self.banner_background_color = None
         #: @type: str
-        self.artist_url = None
+        self.cover_photo_url = None
+
+        #: @type: bool
+        self.has_icon = None
+        #: @type: bool
+        self.has_influenced_artists = None
+        #: @type: bool
+        self.has_influential_artists = None
+        #: @type: bool
+        self.has_radio = None
+        #: @type: bool
+        self.has_related_artists = None
+        #: @type: bool
+        self.has_review = None
+
+        #: @type: bool
+        self.in_program = None
+
+        #: @type: list
+        self.stations = None
 
         #: @type: str
-        self.album = None
+        self.top_album_icon = None
         #: @type: str
-        self.album_artist = None
-        #: @type: str
-        self.album_artist_key = None
-        #: @type: str
-        self.album_key = None
-        #: @type: str
-        self.album_url = None
+        self.top_songs_key = None
 
         #: @type: str
         self.radio_key = None
 
-        #: @type: bool
-        self.can_download = None
-        #: @type: bool
-        self.can_download_album_only = None
+        #: @type: int
+        self.play_count = None
 
     @classmethod
     def parse(cls, data):
@@ -58,6 +73,6 @@ class RdioTrack(RdioMediaItem):
         @param data: Data to parse
         @type data: str or dict
 
-        @rtype: RdioTrack
+        @rtype: RdioArtist
         """
-        return super(RdioTrack, cls).parse(data)
+        return super(RdioArtist, cls).parse(data)

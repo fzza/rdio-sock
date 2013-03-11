@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from rdiosock.objects.source import RdioSource
+from rdiosock.objects.source import RdioSource, RdioTrackSource, RdioAlbumSource
 from rdiosock.objects.base import RdioBaseItem
 
 
@@ -38,7 +38,7 @@ class RdioPlayerState(RdioBaseItem):
 
     def __setattr__(self, name, value):
         if name == 'current_source':
-            value = RdioSource.parse(value)
+            value = RdioSource.parse_source(value)
 
         super(RdioPlayerState, self).__setattr__(name, value)
 

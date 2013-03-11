@@ -75,7 +75,7 @@ class RdioPlayer(EventHook):
                 value = RdioTrack.parse(value)
                 self._fire_on_song_changed(value)
             elif name == 'last_source_played':
-                value = RdioSource.parse(value)
+                value = RdioSource.parse_source(value)
 
             setattr(self, name, value)
             Logr.debug('_field_changed(%s) : updated', name)

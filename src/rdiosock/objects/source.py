@@ -15,73 +15,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from rdiosock import Logr
+from rdiosock.objects.album import RdioAlbum
 from rdiosock.objects.track import RdioTrack
 from rdiosock.objects.base import RdioMediaItem
 
 
 class RdioSource(RdioMediaItem):
-    PARSE_NAME_MAP = {
-        'icon400': 'icon_400'
-    }
-    PARSE_NAME_IGNORE = [
-        'item_track_keys'
-    ]
-    PARSE_VALUE_METHODS = {
-        'tracks': 'parse_tracks'
-    }
-
     def __init__(self):
         RdioMediaItem.__init__(self)
 
-        #: @type: list of str
-        self.track_keys = None
-        #: @type: list of RdioTrack
-        self.tracks = None
-        #: @type: int
-        self.current_position = None
-
-        # TODO: Parse dates
-        #: @type: str
-        self.display_date = None
-        #: @type: str
-        self.release_date = None
-
-        #: @type: str
-        self.icon_400 = None
-
-        #: @type: str
-        self.raw_artist_key = None
-
-        #: @type: list or RdioPerson
-        self.network_consumers = None
-
-        #: @type: str
-        self.user_key = None
-        #: @type: str
-        self.user_name = None
-
     @staticmethod
-    def parse_tracks(value):
-        """Parse tracks list dictionary
+    def parse_source(value):
+        if value is None:
+            return None
 
-        @param value: tracks list dictionary
-        @type value: dict
-        """
-        if not isinstance(value, dict):
-            raise ValueError()
+        if value.get('type') == 't':
+            return RdioTrackSource.parse(value)
+        elif value.get('type') == 'al':
+            return RdioAlbumSource.parse(value)
 
-        if 'items' not in value:
-            raise ValueError()
-
-        if value.get('type') != 'list':
-            raise ValueError()
-
-        return_value = []
-
-        for track in value.get('items', []):
-            return_value.append(RdioTrack.parse(track))
-
-        return return_value
+        Logr.warning("'%s' source type not implemented", value.get('type'))
+        return None
 
     @classmethod
     def parse(cls, data):
@@ -92,4 +47,55 @@ class RdioSource(RdioMediaItem):
 
         @rtype: RdioSource
         """
+
         return super(RdioSource, cls).parse(data)
+
+
+class RdioTrackSource(RdioTrack, RdioSource):
+    def __init__(self):
+        RdioTrack.__init__(self)
+        RdioSource.__init__(self)
+
+    @classmethod
+    def parse(cls, data):
+        """Parse data into object
+
+        @param data: Data to parse
+        @type data: str or dict
+
+        @rtype: RdioTrackSource
+        """
+        return super(RdioTrackSource, cls).parse(data)
+
+
+class RdioAlbumSource(RdioAlbum, RdioSource):
+    def __init__(self):
+        RdioAlbum.__init__(self)
+        RdioSource.__init__(self)
+
+        #: @type: str
+        self.album_key = None
+        #: @type: str
+        self.album_url = None
+
+        #: @type: int
+        self.current_position = None
+
+        #: @type: str
+        self.raw_artist_key = None
+
+        #: @type: str
+        self.user_key = None
+        #: @type: str
+        self.user_name = None
+
+    @classmethod
+    def parse(cls, data):
+        """Parse data into object
+
+        @param data: Data to parse
+        @type data: str or dict
+
+        @rtype: RdioAlbumSource
+        """
+        return super(RdioAlbumSource, cls).parse(data)
