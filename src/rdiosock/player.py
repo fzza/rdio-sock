@@ -13,7 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from datetime import timedelta
+import time
 
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
@@ -22,6 +23,9 @@ from rdiosock.objects.queue import RdioQueue
 from rdiosock.objects.source import RdioSource
 from rdiosock.objects.track import RdioTrack
 from rdiosock.utils import EventHook, camel_to_score
+
+
+SONG_CHANGED_MIN_SECONDS = 8
 
 
 class RdioPlayer(EventHook):
@@ -37,6 +41,11 @@ class RdioPlayer(EventHook):
         self._sock = sock
 
         self.update_callback = None
+
+        # Events
+        self.on_song_changed = EventHook()
+        self._on_song_changed_last_fire = None
+        self._on_song_changed_last_value = None
 
         #: @type: RdioPlayerState
         self.player_state = None
@@ -64,6 +73,7 @@ class RdioPlayer(EventHook):
         if hasattr(self, name):
             if name == 'last_song_played':
                 value = RdioTrack.parse(value)
+                self._fire_on_song_changed(value)
             elif name == 'last_source_played':
                 value = RdioSource.parse(value)
 
@@ -105,9 +115,37 @@ class RdioPlayer(EventHook):
             self._field_changed('queue', RdioQueue.parse(result['queue']))
             Logr.debug("queue updated to version %s", self.queue.version)
 
+        # Fire 'on_song_changed' event
+        self._fire_on_song_changed(
+            self.player_state.current_source.tracks[
+                self.player_state.current_source.current_position])
+
+        # Fire callback
         if self.update_callback is not None:
             self.update_callback(self.player_state, self.queue)
             self.update_callback = None
+
+    def _fire_on_song_changed(self, track):
+        """
+        @type track: RdioTrack
+        """
+        fire = False
+        if self._on_song_changed_last_fire is None:
+            fire = True
+        else:
+            seconds = (time.time() - self._on_song_changed_last_fire)
+
+            if seconds > SONG_CHANGED_MIN_SECONDS:
+                fire = True
+            elif self._on_song_changed_last_value is None:
+                fire = True
+            elif self._on_song_changed_last_value.key != track.key:
+                fire = True
+
+        if fire:
+            self._on_song_changed_last_fire = time.time()
+            self._on_song_changed_last_value = track
+            self.on_song_changed(track)
 
     #
     # Fields

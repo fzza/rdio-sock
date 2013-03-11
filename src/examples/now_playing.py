@@ -25,13 +25,11 @@ sys.path.insert(0, os.path.abspath(current_dir + "\\..\\"))
 from rdiosock import RdioSock
 
 
-def last_song_played_changed(last_song_played):
+def song_changed(track):
     """
-    @type last_song_played: RdioTrack
+    @type track: RdioTrack
     """
-    print "%s - %s - %s" % (last_song_played.name,
-                            last_song_played.album,
-                            last_song_played.artist)
+    print "%s - %s - %s" % (track.name, track.album, track.artist)
 
 
 if __name__ == '__main__':
@@ -45,15 +43,14 @@ if __name__ == '__main__':
         # Subscribe services into pubsub updates
         rdio.pubsub.subscribe(rdio.services.fields)
 
-        # Get notified when song changes (when 'last_song_played' field changes)
-        rdio.player.bind(last_song_played_changed, 'last_song_played')
+        # Bind to 'on_song_changed' event
+        rdio.player.on_song_changed.bind(song_changed)
 
-        rdio.player.update()  # Get latest player_state
-
-        # Get currently playing song from player_state
-        last_song_played_changed(rdio.player.player_state.current_source.tracks[
-            rdio.player.player_state.current_source.current_position
-        ])
+        # Force a player update (will fire 'on_song_changed' with currently playing song)
+        #
+        # NOTE: Live song changes will automatically fire 'on_song_changed', so there
+        # there should be no need to poll this method.
+        rdio.player.update()
 
     rdio.pubsub.on_connected.bind(pubsub_connected)
 

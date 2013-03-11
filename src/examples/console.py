@@ -56,14 +56,11 @@ def login(rdio):
         raise
 
 
-def last_song_played_changed(last_song_played):
+def song_changed(track):
     """
-    @type last_song_played: RdioTrack
+    @type track: RdioTrack
     """
-    Logr.info("%s - %s - %s",
-              last_song_played.name,
-              last_song_played.album,
-              last_song_played.artist)
+    Logr.info("%s - %s - %s", track.name, track.album, track.artist)
 
 
 def queue_changed(queue):
@@ -85,16 +82,14 @@ if __name__ == '__main__':
         rdio.pubsub.subscribe(rdio.services.private)
 
         # Bind player events
-        rdio.player.bind(last_song_played_changed, 'last_song_played')
+        rdio.player.on_song_changed.bind(song_changed)
         rdio.player.bind(queue_changed, 'queue')
 
-        def update_callback(player_state, queue):
-            # Get currently playing song from player_state
-            last_song_played_changed(player_state.current_source.tracks[
-                player_state.current_source.current_position
-            ])
-
-        rdio.player.update(update_callback)
+        # Force a player update (will fire 'on_song_changed' with currently playing song)
+        #
+        # NOTE: Live song changes will automatically fire 'on_song_changed', so there
+        # there should be no need to poll this method.
+        rdio.player.update()
 
     rdio.pubsub.on_connected.bind(pubsub_connected)
 
