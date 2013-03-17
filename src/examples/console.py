@@ -51,7 +51,7 @@ def login(rdio):
     # Login to Rdio
     try:
         rdio.user.login(username, password)
-    except RdioException, e:
+    except RdioException:
         Logr.warning('failed to login, unable to continue')
         raise
 

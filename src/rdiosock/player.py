@@ -13,9 +13,9 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from datetime import timedelta
-import time
 
+
+import time
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
 from rdiosock.objects.player_state import RdioPlayerState

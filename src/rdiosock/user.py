@@ -18,7 +18,7 @@
 import requests
 from rdiosock.exceptions import RdioApiError, RdioNetworkError
 from rdiosock.logr import Logr
-from rdiosock.utils import web_url, camel_to_score, update_attrs
+from rdiosock.utils import web_url, update_attrs
 
 
 class RdioUser:

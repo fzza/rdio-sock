@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from rdiosock.objects.source import RdioSource, RdioTrackSource, RdioAlbumSource
+from rdiosock.objects.source import RdioSource
 from rdiosock.objects.base import RdioBaseItem
 
 

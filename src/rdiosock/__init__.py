@@ -147,8 +147,6 @@ class RdioSock:
             headers=headers
         )
 
-        result = None
-
         if response_callback is None:
             result = job.execute_sync()
         else:

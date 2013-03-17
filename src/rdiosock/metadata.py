@@ -1,4 +1,3 @@
-from pprint import pprint
 from rdiosock.exceptions import RdioApiError
 from rdiosock.objects.collection import RdioList
 
@@ -136,8 +135,8 @@ class RdioMetadata(object):
         @param query: Search query
         @type query: str
 
-        @param search_type: Search type (SEARCH_TYPES)
-        @type search_type: int or list of int
+        @param search_types: Search type (SEARCH_TYPES)
+        @type search_types: int or list of int
 
         @param search_extras: Search result extras to include (SEARCH_EXTRAS)
         @type search_extras: int or list of int

@@ -16,7 +16,7 @@
 
 
 from rdiosock.logr import Logr
-from rdiosock.utils import camel_to_score, update_attrs
+from rdiosock.utils import update_attrs
 
 
 class RdioServerInfo:
