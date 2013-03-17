@@ -27,6 +27,7 @@ Unofficial Rdio WebSocket Library
 
 **This library *does* support remotely controlling an Rdio client and will expose all the internal methods used by the Rdio client (playlists, metadata, etc..)**, The currently implemented functions are listed below, check out the *To Do / Finish* list below for features / services that are currently being implemented or are planned to be implemented.
 
+### Implemented Features ###
  - **Media controls** - Play, pause and skip tracks
  - **Currently playing** - View the currently playing track *(PubSub updates)*
  - **Queue** - View the current play queue *(PubSub updates)*
