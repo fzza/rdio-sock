@@ -21,31 +21,32 @@ Unofficial Rdio WebSocket Library
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## Todo ##
+## To Do / Finish ##
 
-#### Core ####
-*rdiosock.metadata* - Access Rdio music metadata (searching, lookup, etc...)    
-*rdiosock.player* - Remote Rdio control and Local Rdio player **(Remote media controls working, No PubSub events handled yet)**
-*rdiosock.user* - User information (details, collection, playlists, friends/following, notifications)
+**[F]** *rdiosock.metadata* - **Implemented Methods :** `search`    
+**[--]** *rdiosock.user*    
 
-#### PubSub Services ####
-*rdiosock.services.collaborators*    
-*rdiosock.services.chat*    
-*rdiosock.services.fields*    
-*rdiosock.services.player*   
-*rdiosock.services.playlists*    
-*rdiosock.services.presence*    
-*rdiosock.services.private* **(`publish_command` implemented)**    
-*rdiosock.services.subscribers*    
+**[--]** *rdiosock.services.collaborators*    
+**[--]** *rdiosock.services.chat*     
+**[--]** *rdiosock.services.playlists*    
+**[--]** *rdiosock.services.presence*      
+**[--]** *rdiosock.services.subscribers*    
+
+---------
+
+**[--] = Not Started**   
+**[F] = Started, needs to be finished**
 
 ## News ##
-**2013/03/04** - *rdiosock.remote* (now merged with *rdio.player*) implemented with most media controls
+**2013/03/12** - `RdioAlbum, RdioArtist, RdioList` objects added, Rdio `objects` hierarchy + parsing has been optimized, `metadata.search()` now returns results via `RdioList` object      
+**2013/03/11** - Added `metadata.search()`, faster song change events, asynchronous web requests (currently only used for `getPlayerState` requests)  
+**2013/03/04** - *rdiosock.remote* (now merged with *rdio.player*) implemented with most media controls    
 **2013/03/02** - Started work on actual library    
 **2013/03/02** - Working Prototype    
 
 ## Example ##
 
-Simple example showing current functionality as of **2013/03/04**
+Simple example output showing current functionality as of **2013/03/04**
 
 	>>> rdio = RdioSock()
 	>>> rdio.user.login("<username>", "<password>")
