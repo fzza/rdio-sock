@@ -25,7 +25,7 @@ Unofficial Rdio WebSocket Library
 
 **This library *does not* directly support playing tracks**, You will require an RTMPe client / library to stream tracks yourself. We do plan to implement the needed methods to receive track playback info *soon*.
 
-**This library *does* support remotely controlling an Rdio client** with the currently implemented functions listed below, check out the *To Do / Finish* list below for features / services that are currently being implemented or are planned to be implemented.
+**This library *does* support remotely controlling an Rdio client and will expose all the internal methods used by the Rdio client (playlists, metadata, etc..)** with the currently implemented functions listed below, check out the *To Do / Finish* list below for features / services that are currently being implemented or are planned to be implemented.
 
  - **Media controls** - Play, pause and skip tracks
  - **Currently playing** - View the currently playing track *(PubSub updates)*
