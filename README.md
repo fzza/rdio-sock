@@ -21,9 +21,19 @@ Unofficial Rdio WebSocket Library
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+## Current State ##
+
+**This library does not directly support playing tracks**, You will require an RTMPe client / library to stream tracks yourself. **We do plan to implement the needed methods to receive track playback info *soon*.**
+
+This library does support remotely controlling an Rdio client with the currently implemented functions listed below, check out the *To Do / Finish* list below for features / services that are currently being implemented or are planned to be implemented.
+
+ - **Media controls** - Play, pause and skip tracks
+ - **Currently playing** - View the currently playing track *(PubSub updates)*
+ - **Queue** - View the current play queue *(PubSub updates)*
+
 ## To Do / Finish ##
 
-**[F]** *rdiosock.metadata* - **Implemented Methods :** `search`    
+**[S]** *rdiosock.metadata* - **Implemented Methods :** `search`    
 **[--]** *rdiosock.user*    
 
 **[--]** *rdiosock.services.collaborators*    
@@ -35,7 +45,7 @@ Unofficial Rdio WebSocket Library
 ---------
 
 **[--] = Not Started**   
-**[F] = Started, needs to be finished**
+**[S] = Started, needs to be finished**
 
 ## News ##
 **2013/03/12** - `RdioAlbum, RdioArtist, RdioList` objects added, Rdio `objects` hierarchy + parsing has been optimized, `metadata.search()` now returns results via `RdioList` object      
