@@ -68,11 +68,11 @@ class RdioArtist(RdioNamedItem, RdioIconItem):
 
     @classmethod
     def parse(cls, data):
-        """Parse data into object
+        """Parse data dictionary into RdioArtist object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioArtist
+        :rtype: :class:`rdiosock.objects.artist.RdioArtist`
         """
         return super(RdioArtist, cls).parse(data)

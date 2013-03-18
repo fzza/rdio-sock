@@ -53,12 +53,12 @@ class RdioCollection(RdioBaseItem):
 
     @classmethod
     def parse(cls, data):
-        """Parse data into object
+        """Parse data dictionary into RdioCollection object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioCollection
+        :rtype: :class:`rdiosock.objects.collection.RdioCollection`
         """
         return super(RdioCollection, cls).parse(data)
 
@@ -81,12 +81,12 @@ class RdioList(RdioCollection):
 
     @classmethod
     def parse(cls, data):
-        """Parse data into object
+        """Parse data dictionary into RdioList object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioList
+        :rtype: :class:`rdiosock.objects.collection.RdioList`
         """
         return super(RdioCollection, cls).parse(data)
 

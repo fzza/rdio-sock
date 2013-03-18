@@ -20,7 +20,6 @@ from rdiosock import Logr
 from rdiosock.utils import camel_to_score
 
 
-
 class RdioBaseItem(object):
     PARSE_NAME_MAP = {}
     PARSE_NAME_IGNORE = []
@@ -39,10 +38,10 @@ class RdioBaseItem(object):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioBaseItem
+        :rtype: RdioBaseItem
         """
         if data is None:
             return None
@@ -99,9 +98,9 @@ class RdioIconItem(RdioDataItem):
             return
 
         #: @type: str
-        self.icon = None
-        #: @type: str
         self.base_icon = None
+        #: @type: str
+        self.icon = None
 
         self.__initialized = True
 
@@ -115,15 +114,17 @@ class RdioNamedItem(RdioDataItem):
 
         #: @type: str
         self.name = None
-        #: @type: str
-        self.short_url = None
         #: @type: int
         self.length = None
+        #: @type: str
+        self.short_url = None
 
         self.__initialized = True
 
 
 class RdioMediaItem(RdioNamedItem, RdioIconItem):
+    """Rdio base media item"""
+
     def __init__(self):
         RdioNamedItem.__init__(self)
         RdioIconItem.__init__(self)
@@ -131,26 +132,28 @@ class RdioMediaItem(RdioNamedItem, RdioIconItem):
         if self._is_initialized('RdioMediaItem'):
             return
 
-        #: @type: bool
+        #: :type: bool
         self.can_sample = None
-        #: @type: bool
+        #: :type: bool
         self.can_stream = None
-        #: @type: bool
+        #: :type: bool
         self.can_tether = None
-        #: @type: bool
+        #: :type: bool
         self.is_clean = None
-        #: @type: bool
+        #: :type: bool
         self.is_explicit = None
 
-        #: @type: int
+        #: :type: int
         self.duration = None
 
-        # TODO: Unknown type, float?
+        # TODO: Unknown
+        #  type, float?
+        #: :type: unknown, float?
         self.price = None
 
-        #: @type: str
+        #: :type: str
         self.embed_url = None
-        #: @type: str
+        #: :type: str
         self.iframe_url = None
 
         self.__initialized = True

@@ -20,6 +20,7 @@ from rdiosock.objects.base import RdioMediaItem
 
 
 class RdioAlbum(RdioMediaItem):
+    """Rdio Album"""
     PARSE_NAME_IGNORE = [
         'item_track_keys'
     ]
@@ -33,67 +34,67 @@ class RdioAlbum(RdioMediaItem):
     def __init__(self):
         RdioMediaItem.__init__(self)
 
-        #: @type: str
+        #: :type: str
         self.big_icon = None
-        #: @type: str
+        #: :type: str
         self.big_icon_1200 = None
 
-        #: @type: str
+        #: :type: str
         self.copyright = None
 
         # TODO: Parse date
-        #: @type: str
+        #: :type: str
         self.display_date = None
 
-        #: @type: str
+        #: :type: str
         self.icon_400 = None
 
         # TODO: Unknown Type
         self.labels = None
-        #: @type: list or RdioPerson
+        #: :type: list or RdioPerson
         self.network_consumers = None
 
-        #: @type: int
+        #: :type: int
         self.playlist_count = None
 
-        #: @type: int
+        #: :type: int
         self.play_count = None
 
         # TODO: Parse date
-        #: @type: str
+        #: :type: str
         self.release_date = None
 
-        #: @type: str
+        #: :type: str
         self.review = None
 
-        #: @type: list of RdioTrack
+        #: :type: list of RdioTrack
         self.tracks = None
-        #: @type: list of str
+        #: :type: list of str
         self.track_keys = None
 
-        #: @type: str
+        #: :type: str
         self.artist = None
-        #: @type: str
+        #: :type: str
         self.artist_key = None
-        #: @type: str
+        #: :type: str
         self.artist_url = None
 
     @classmethod
     def parse(cls, data):
-        """Parse data into object
+        """Parse data dictionary into RdioAlbum object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioAlbum
+        :rtype: :class:`rdiosock.objects.album.RdioAlbum`
         """
         return super(RdioAlbum, cls).parse(data)
 
     def parse_tracks(self, key, value):
-        """Parse tracks list dictionary
+        """Parse tracks list
 
-        @param value: tracks list dictionary
-        @type value: dict
+        :param value: tracks list dictionary
+        :type value: dict
         """
         if not isinstance(value, dict):
             raise ValueError()
