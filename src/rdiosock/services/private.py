@@ -21,6 +21,7 @@ from rdiosock.utils import EventHook
 
 
 class RdioPrivateService(RdioService):
+    """Private service manager"""
     __topic__ = 'private'
 
     def __init__(self, sock):

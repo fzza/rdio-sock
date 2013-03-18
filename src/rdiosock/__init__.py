@@ -39,7 +39,14 @@ DEFAULT_USERAGENT_CHROME = "Mozilla/5.0 (Windows NT 6.2; WOW64) " \
 
 
 class RdioSock:
-    def __init__(self, useragent=DEFAULT_USERAGENT_CHROME):
+    """Rdio-Sock client"""
+    def __init__(self, useragent=None):
+        """
+        :param useragent: User-Agent to use for HTTP/HTTPS requests or None which defaults to Chrome 25.0
+        :type useragent: str
+        """
+        if useragent is None:
+            useragent = DEFAULT_USERAGENT_CHROME
         self._useragent = useragent
 
         self.pubsub = RdioPubSub(self)
@@ -161,6 +168,7 @@ class RdioSock:
 
 
 class RdioSockServiceManager:
+    """Rdio service manager"""
     def __init__(self, sock):
         self._sock = sock
 

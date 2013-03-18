@@ -3,6 +3,7 @@ from rdiosock.objects.collection import RdioList
 
 
 class SEARCH_TYPES:
+    """Metadata search type"""
     NONE        = 0
     ARTIST      = 1
     ALBUM       = 2
@@ -52,6 +53,7 @@ class SEARCH_TYPES:
 
 
 class SEARCH_EXTRAS:
+    """Metadata search extras"""
     NONE            = 0
     LOCATION        = 1
     USERNAME        = 2
@@ -125,21 +127,21 @@ class SEARCH_EXTRAS:
 class RdioMetadata(object):
     def __init__(self, sock):
         """
-        @type sock: RdioSock
+        :type sock: RdioSock
         """
         self._sock = sock
 
     def search(self, query, search_types=SEARCH_TYPES.ALL, search_extras=SEARCH_EXTRAS.ALL):
         """Search for media item.
 
-        @param query: Search query
-        @type query: str
+        :param query: Search query
+        :type query: str
 
-        @param search_types: Search type (SEARCH_TYPES)
-        @type search_types: int or list of int
+        :param search_types: Search type (:class:`rdiosock.metadata.SEARCH_TYPES` bitwise-OR or list)
+        :type search_types: int or list of int
 
-        @param search_extras: Search result extras to include (SEARCH_EXTRAS)
-        @type search_extras: int or list of int
+        :param search_extras: Search result extras to include (:class:`rdiosock.metadata.SEARCH_EXTRAS` bitwise-OR or list)
+        :type search_extras: int or list of int
         """
 
         result = self._sock._api_post('search', {

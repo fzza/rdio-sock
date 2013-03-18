@@ -23,6 +23,7 @@ from rdiosock.utils import update_attrs, randint, random_id, EventHook
 
 
 class RdioPubSub:
+    """PubSub client"""
     def __init__(self, sock):
         self._sock = sock
         self.ws = None
@@ -39,6 +40,11 @@ class RdioPubSub:
         self.servers = None
 
     def connect(self, update=True):
+        """Connect to PubSub server
+
+        :param update: Force pubsub info update (pubsubInfo)
+        :type update: bool
+        """
         if self._sock.user.authorization_key is None or \
                 self._sock.user.session_cookie is None:
             raise RdioException()
@@ -65,37 +71,37 @@ class RdioPubSub:
     def publish(self, topic, data):
         """Publish PubSub message
 
-        @param topic: PubSub topic
-        @type topic: str
+        :param topic: Topic Name
+        :type topic: str
 
-        @param data: json serializable object
-        @type data: object
+        :param data: json serializable object
+        :type data: object
         """
         self.ws.send_message(RdioPubSubMessage(
             RdioPubSubMessage.METHOD_PUB, topic, data
         ))
 
     def subscribe(self, service, target=None):
-        """Subscribe to RdioService pubsub messages
+        """Subscribe RdioService into pubsub messages
 
-        @param service: RdioService instance
-        @type service: RdioService
+        :param service: RdioService instance
+        :type service: :class:`rdiosock.services.RdioService`
 
-        @param target: Target (User, Playlist) or None to indicate current user
-        @type target: str or None
+        :param target: Target (User, Playlist) or None to indicate current user
+        :type target: str or None
         """
         if target is None:
             target = self._sock.user.key
         service.__subscribe__(self, target)
 
     def subscribe_topic(self, topic, callback, target=None):
-        """ Subscribe to pubsub messages
+        """ Subscribe to pubsub topic
 
-        @param topic: PubSub topic to subscribe to
-        @type topic: str
+        :param topic: Topic Name
+        :type topic: str
 
-        @param callback: callback(message) will be called when messages are received
-        @type callback: function
+        :param callback: callback(message) will be called when messages are received
+        :type callback: function
         """
         topic = topic.strip('/')
         if '/' not in topic:

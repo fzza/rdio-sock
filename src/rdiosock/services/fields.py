@@ -22,6 +22,7 @@ from rdiosock.utils import EventHook
 
 
 class RdioFieldService(RdioService):
+    """Field service manager"""
     __topic__ = 'fields'
 
     def __init__(self, sock):

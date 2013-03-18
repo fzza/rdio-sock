@@ -35,7 +35,7 @@ class RdioPlayer(EventHook):
 
     def __init__(self, sock):
         """
-        @type sock: RdioSock
+        :type sock: RdioSock
         """
         super(RdioPlayer, self).__init__()
         self._sock = sock
@@ -47,15 +47,16 @@ class RdioPlayer(EventHook):
         self._on_song_changed_last_fire = None
         self._on_song_changed_last_value = None
 
-        #: @type: RdioPlayerState
+        #: :type: RdioPlayerState
         self.player_state = None
-        #: @type: RdioQueue
+        #: :type: RdioQueue
         self.queue = None
 
-        #: @type: RdioTrack
+        #: :type: RdioTrack
         self.last_song_played = None
+        # TODO: last_song_play_time
         self.last_song_play_time = None
-        #: @type: RdioSource
+        #: :type: RdioSource
         self.last_source_played = None
 
         # Bind field events
@@ -84,6 +85,7 @@ class RdioPlayer(EventHook):
         self[name](value)  # Fire event
 
     def update(self, callback=None):
+        """Force a player state + queue update"""
         Logr.debug("update")
         params = {}
         self.update_callback = callback

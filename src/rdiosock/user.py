@@ -44,6 +44,17 @@ class RdioUser:
         self.new_user = None
 
     def login(self, username, password, remember=True):
+        """Login as Rdio user
+
+        :param username: Username in plaintext
+        :type username: str
+
+        :param password: Password in plaintext
+        :type password: str
+
+        :param remember: Should we remember this login authorization?
+        :type remember: bool
+        """
         if not self.env_loaded or self.authorization_key is None:
             self._sock._update_env(url=web_url('account/signin'))
 
