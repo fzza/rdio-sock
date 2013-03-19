@@ -1,7 +1,10 @@
 Welcome to Rdio-Sock's documentation!
 =====================================
 
-Contents:
+Classes
+=====================================
+
+Core:
 
 .. toctree::
     :maxdepth: 2
