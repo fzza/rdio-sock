@@ -1,7 +1,9 @@
-# rdio-sock #
+# Rdio-Sock #
 Unofficial Rdio WebSocket Library
 
-**Very early development, Expect major changes without notice or documentation**
+**Very early development, Expect major changes without notice**
+
+Documentation available at http://rdio-sock.readthedocs.org
 
 ## License ##
 
@@ -23,11 +25,16 @@ Unofficial Rdio WebSocket Library
 
 ## Current State ##
 
-**This library *does not* directly support playing tracks**, You will require an RTMPe client / library to stream tracks yourself. We do plan to implement the needed methods to receive track playback info *soon*.
+**This library *does not* directly support playing tracks**,
+You will require an RTMPe client / library to stream tracks yourself.
+We do plan to implement the needed methods to receive track playback info *soon*.
 
-**This library *does* support remotely controlling an Rdio client and will expose all the internal methods used by the Rdio client (playlists, metadata, etc..)**, The currently implemented functions are listed below, check out the *To Do / Finish* list below for features / services that are currently being implemented or are planned to be implemented.
+**This library *does* support remotely controlling an Rdio client and will expose all the
+internal methods used by the Rdio client (playlists, metadata, etc..)**,
+The currently implemented functions are listed below, check out the *To Do / Finish* list
+below for features / services that are currently being implemented or are planned to be implemented.
 
-### Implemented Features ###
+### Implemented Functions ###
  - **Media controls** - Play, pause and skip tracks
  - **Currently playing** - View the currently playing track *(PubSub updates)*
  - **Queue** - View the current play queue *(PubSub updates)*
@@ -49,37 +56,9 @@ Unofficial Rdio WebSocket Library
 **[S] = Started, needs to be finished**
 
 ## News ##
+**2013/03/20** - Documentation now available at http://rdio-sock.readthedocs.org
 **2013/03/12** - `RdioAlbum, RdioArtist, RdioList` objects added, Rdio `objects` hierarchy + parsing has been optimized, `metadata.search()` now returns results via `RdioList` object      
 **2013/03/11** - Added `metadata.search()`, faster song change events, asynchronous web requests (currently only used for `getPlayerState` requests)  
 **2013/03/04** - *rdiosock.remote* (now merged with *rdio.player*) implemented with most media controls    
 **2013/03/02** - Started work on actual library    
 **2013/03/02** - Working Prototype    
-
-## Example ##
-
-Simple example output showing current functionality as of **2013/03/04**
-
-	>>> rdio = RdioSock()
-	>>> rdio.user.login("<username>", "<password>")
-	[...snip...]
-
-	>>> rdio.pubsub.connect()
-    [RdioPubSubClient] using server : 8.18.203.81:8080
-    [RdioPubSubClient] opened
-    [RdioPubSubClient] send_message CONNECT [...snip...]
-    [RdioPubSub] received_message: CONNECTED [...snip...]
-
-    >>> rdio.player.volume = 0.7
-    [RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "volume", "value": 0.7}, "event": "remote"}
-
-    >>> rdio.player.pause()
-    [RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "pause"}, "event": "remote"}
-	
-	>>> rdio.player.play()
-	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "play"}, "event": "remote"}
-
-	>>> rdio.player.shuffle = True
-	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "shuffle", "value": true}, "event": "remote"}
-
-	>>> rdio.player.repeat = rdio.player.REPEAT_ALL
-	[RdioPubSubClient] send_message PUB s*******/private|{"command": {"type": "set", "key": "repeat", "value": 2}, "event": "remote"}
