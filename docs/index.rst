@@ -1,4 +1,4 @@
-Welcome to Rdio-Sock's documentation!
+Rdio-Sock documentation
 =====================================
 
 Classes
