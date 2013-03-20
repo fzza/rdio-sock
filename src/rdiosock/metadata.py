@@ -3,7 +3,7 @@ from rdiosock.objects.collection import RdioList
 
 
 class SEARCH_TYPES:
-    """Metadata search type"""
+    """Metadata search types"""
     NONE        = 0
     ARTIST      = 1
     ALBUM       = 2

@@ -44,7 +44,7 @@ class RdioUser:
         self.new_user = None
 
     def login(self, username, password, remember=True):
-        """Login as Rdio user
+        """Login as an Rdio user
 
         :param username: Username in plaintext
         :type username: str

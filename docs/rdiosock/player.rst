@@ -5,6 +5,14 @@ RdioPlayer
 
     .. autoclass:: RdioPlayer
 
+        **Class Constants**
+
+        .. py:data:: REPEAT_ALL
+
+        .. py:data:: REPEAT_ONE
+
+        .. py:data:: REPEAT_NONE
+
         **Fields**
 
         *Un-changeable fields updated via PubSub*
