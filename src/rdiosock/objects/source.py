@@ -27,6 +27,13 @@ class RdioSource(RdioMediaItem):
 
     @staticmethod
     def parse_source(value):
+        """Parse the source into RdioTrackSource or RdioAlbumSource
+
+        :param value: Data to parse
+        :type value: dict
+
+        :rtype: :class:`rdiosock.objects.source.RdioSource`
+        """
         if value is None:
             return None
 
@@ -42,10 +49,10 @@ class RdioSource(RdioMediaItem):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioSource
+        :rtype: :class:`rdiosock.objects.source.RdioSource`
         """
 
         return super(RdioSource, cls).parse(data)
@@ -60,10 +67,10 @@ class RdioTrackSource(RdioTrack, RdioSource):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioTrackSource
+        :rtype: :class:`rdiosock.objects.source.RdioTrackSource`
         """
         return super(RdioTrackSource, cls).parse(data)
 
@@ -93,9 +100,9 @@ class RdioAlbumSource(RdioAlbum, RdioSource):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioAlbumSource
+        :rtype: :class:`rdiosock.objects.source.RdioAlbumSource`
         """
         return super(RdioAlbumSource, cls).parse(data)

@@ -55,9 +55,9 @@ class RdioTrack(RdioMediaItem):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioTrack
+        :rtype: :class:`rdiosock.objects.track.RdioTrack`
         """
         return super(RdioTrack, cls).parse(data)

@@ -41,7 +41,7 @@ class RdioBaseItem(object):
         :param data: Data to parse
         :type data: str or dict
 
-        :rtype: RdioBaseItem
+        :rtype: :class:`rdiosock.objects.base.RdioBaseItem`
         """
         if data is None:
             return None

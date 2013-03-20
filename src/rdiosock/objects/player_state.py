@@ -46,9 +46,9 @@ class RdioPlayerState(RdioBaseItem):
     def parse(cls, data):
         """Parse data into object
 
-        @param data: Data to parse
-        @type data: str or dict
+        :param data: Data to parse
+        :type data: str or dict
 
-        @rtype: RdioPlayerState
+        :rtype: :class:`rdiosock.objects.player_state.RdioPlayerState`
         """
         return super(RdioPlayerState, cls).parse(data)

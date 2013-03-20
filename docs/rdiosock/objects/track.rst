@@ -1,11 +1,15 @@
-RdioAlbum
+RdioTrack
 =====================================
 
-.. automodule:: rdiosock.objects.album
+.. automodule:: rdiosock.objects.track
 
-    .. autoclass:: RdioAlbum
+    .. autoclass:: RdioTrack
 
-        .. begin-RdioAlbum
+        .. begin-RdioTrack
+
+        .. py:attribute:: track_num
+
+            :class:`int`
 
         .. py:attribute:: artist
 
@@ -19,61 +23,39 @@ RdioAlbum
 
             :class:`str`
 
-        .. py:attribute:: big_icon
+        .. py:attribute:: album
 
             :class:`str`
 
-        .. py:attribute:: big_icon_1200
+        .. py:attribute:: album_artist
 
             :class:`str`
 
-        .. py:attribute:: copyright
+        .. py:attribute:: album_artist_key
 
             :class:`str`
 
-        .. py:attribute:: display_date
-
-            :class:`unknown`
-
-        .. py:attribute:: icon_400
+        .. py:attribute:: album_key
 
             :class:`str`
 
-        .. py:attribute:: labels
-
-            :class:`unknown`
-
-        .. py:attribute:: network_consumers
-
-            list of :class:`rdiosock.objects.person.RdioPerson`
-
-        .. py:attribute:: playlist_count
-
-            :class:`int`
-
-        .. py:attribute:: play_count
-
-            :class:`int`
-
-        .. py:attribute:: release_date
-
-            :class:`unknown`
-
-        .. py:attribute:: review
+        .. py:attribute:: album_url
 
             :class:`str`
 
-        .. py:attribute:: tracks
+        .. py:attribute:: radio_key
 
-            list of :class:`rdiosock.objects.track.RdioTrack`
+            :class:`str`
 
-        .. py:attribute:: track_keys
+        .. py:attribute:: can_download
 
-            list of :class:`str`
+            :class:`bool`
 
-        .. automethod:: parse_tracks
+        .. py:attribute:: can_download_album_only
 
-        .. end-RdioAlbum
+            :class:`bool`
+
+        .. end-RdioTrack
 
         **RdioMediaItem**
         *(Inherited)*

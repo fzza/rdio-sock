@@ -33,6 +33,11 @@ Objects:
     rdiosock/objects/album
     rdiosock/objects/artist
     rdiosock/objects/collection
+    rdiosock/objects/person
+    rdiosock/objects/player_state
+    rdiosock/objects/queue
+    rdiosock/objects/source
+    rdiosock/objects/track
 
 Indices and tables
 ==================
