@@ -31,6 +31,8 @@ Start with the following example:
     # Connect the WebSocket-PubSub client to enable real-time updates
     rdio.pubsub.connect()
 
+When you have this working you should be able to dive into the documentation starting
+at the main client class :class:`rdiosock.RdioSock`
 
 Classes
 =====================================
