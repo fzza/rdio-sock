@@ -56,7 +56,7 @@ below for features / services that are currently being implemented or are planne
 **[S] = Started, needs to be finished**
 
 ## News ##
-**2013/03/20** - Documentation now available at http://rdio-sock.readthedocs.org
+**2013/03/20** - Documentation now available at http://rdio-sock.readthedocs.org    
 **2013/03/12** - `RdioAlbum, RdioArtist, RdioList` objects added, Rdio `objects` hierarchy + parsing has been optimized, `metadata.search()` now returns results via `RdioList` object      
 **2013/03/11** - Added `metadata.search()`, faster song change events, asynchronous web requests (currently only used for `getPlayerState` requests)  
 **2013/03/04** - *rdiosock.remote* (now merged with *rdio.player*) implemented with most media controls    
