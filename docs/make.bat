@@ -35,6 +35,7 @@ if "%1" == "help" (
 	echo.  changes    to make an overview over all changed/added/deprecated items
 	echo.  linkcheck  to check all external links for integrity
 	echo.  doctest    to run all doctests embedded in the documentation if enabled
+	echo.  coverage   to make coverage files
 	goto end
 )
 
@@ -184,6 +185,15 @@ if "%1" == "doctest" (
 	echo.
 	echo.Testing of doctests in the sources finished, look at the ^
 results in %BUILDDIR%/doctest/output.txt.
+	goto end
+)
+
+if "%1" == "coverage" (
+	%SPHINXBUILD% -b coverage %ALLSPHINXOPTS% %BUILDDIR%/coverage
+	if errorlevel 1 exit /b 1
+	echo.
+	echo.Coverage finished, look at the ^
+results in %BUILDDIR%/coverage/python.txt.
 	goto end
 )
 
