@@ -27,6 +27,7 @@ class RdioPubSub:
     def __init__(self, sock):
         self._sock = sock
         self.ws = None
+        self.name = "_web_" + str(random_id())
 
         # Events
         self.on_connected = EventHook()
@@ -141,6 +142,10 @@ class RdioPubSub:
 
 class RdioPubSubClient(WebSocketClient):
     def __init__(self, pubsub, received_message, reconnect):
+        """
+
+        :type pubsub: RdioPubSub
+        """
         self.pubsub = pubsub
         self._received_message = received_message
         self._reconnect = reconnect
@@ -171,7 +176,7 @@ class RdioPubSubClient(WebSocketClient):
                 },
                 'player': {
                     'canRemote': True,
-                    'name': '_web_' + str(random_id())
+                    'name': self.pubsub.name
                 }
         }))
 

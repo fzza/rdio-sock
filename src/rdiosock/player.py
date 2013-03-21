@@ -18,6 +18,7 @@
 import time
 from rdiosock.exceptions import RdioApiError
 from rdiosock.logr import Logr
+from rdiosock.objects.playback_info import RdioPlaybackInfo
 from rdiosock.objects.player_state import RdioPlayerState
 from rdiosock.objects.queue import RdioQueue
 from rdiosock.objects.source import RdioSource
@@ -84,8 +85,46 @@ class RdioPlayer(EventHook):
             Logr.warning('_field_changed(%s) : not found', name)
         self[name](value)  # Fire event
 
+    #
+    # Fields
+    #
+
+    def set(self, key, value):
+        self._sock.services.private.publish_command(
+            'remote', 'set', key=key, value=value
+        )
+
+    # Volume
+    def set_volume(self, level):
+        self.set('volume', level)
+    volume = property(None, set_volume)
+
+    # Shuffle
+    def set_shuffle(self, enabled):
+        self.set('shuffle', enabled)
+    shuffle = property(None, set_shuffle)
+
+    # Repeat`
+    def set_repeat(self, repeat_type):
+        if repeat_type not in [RdioPlayer.REPEAT_ALL,
+                               RdioPlayer.REPEAT_ONE,
+                               RdioPlayer.REPEAT_NONE]:
+            raise ValueError()
+
+        self.set('repeat', repeat_type)
+    repeat = property(None, set_repeat)
+
+    # Position
+    def set_position(self, position):
+        self.set('position', position)
+    position = property(None, set_position)
+
+    #
+    # Methods
+    #
+
     def update(self, callback=None):
-        """Force a player state + queue update"""
+        """Force a player state and queue update"""
         Logr.debug("update")
         params = {}
         self.update_callback = callback
@@ -129,7 +168,7 @@ class RdioPlayer(EventHook):
 
     def _fire_on_song_changed(self, track):
         """
-        @type track: RdioTrack
+        :type track: RdioTrack
         """
         fire = False
         if self._on_song_changed_last_fire is None:
@@ -149,43 +188,26 @@ class RdioPlayer(EventHook):
             self._on_song_changed_last_value = track
             self.on_song_changed(track)
 
-    #
-    # Fields
-    #
+    def get_playback_info(self, key, manual_play=True):
+        """Get track playback info
 
-    def set(self, key, value):
-        self._sock.services.private.publish_command(
-            'remote', 'set', key=key, value=value
-        )
+        :param key: Track Key
+        :type key: str
+        """
+        result = self._sock._api_post('getPlaybackInfo', {
+            'key': key,
+            'manualPlay': manual_play,
+            'type': 'flash',
+            'playerName': self._sock.pubsub.name,
+            'requiresUnlimited': False
+        }, secure=False)
 
-    # Volume
-    def set_volume(self, level):
-        self.set('volume', level)
-    volume = property(None, set_volume)
+        if result['status'] != 'ok':
+            raise RdioApiError(result)
 
-    # Shuffle
-    def set_shuffle(self, enabled):
-        self.set('shuffle', enabled)
-    shuffle = property(None, set_shuffle)
+        return RdioPlaybackInfo.parse(result['result'])
 
-    # Repeat`
-    def set_repeat(self, repeat_type):
-        if repeat_type not in [RdioPlayer.REPEAT_ALL,
-                               RdioPlayer.REPEAT_ONE,
-                               RdioPlayer.REPEAT_NONE]:
-            raise ValueError()
-
-        self.set('repeat', repeat_type)
-    repeat = property(None, set_repeat)
-
-    # Position
-    def set_position(self, position):
-        self.set('position', position)
-    position = property(None, set_position)
-
-    #
     # Media Controls
-    #
 
     def toggle_pause(self):
         self._sock.services.private.publish_command('remote', 'togglePause')

@@ -87,6 +87,10 @@ RdioPlayer
 
         **Methods**
 
+        .. automethod:: update
+
+        .. automethod:: get_playback_info
+
         .. automethod:: toggle_pause
 
         .. automethod:: toggle_shuffle

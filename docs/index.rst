@@ -67,6 +67,7 @@ Objects:
     rdiosock/objects/artist
     rdiosock/objects/collection
     rdiosock/objects/person
+    rdiosock/objects/playback_info
     rdiosock/objects/player_state
     rdiosock/objects/queue
     rdiosock/objects/source
